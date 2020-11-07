@@ -60,7 +60,7 @@ export const deleteProduct = (productId) => {
 	}
 }
 
-export const createProduct = (title, imageUrl, price, description) => {
+export const createProduct = (title, imageUrl, price, description, category) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
 		const userId = getState().auth.userId
@@ -76,6 +76,7 @@ export const createProduct = (title, imageUrl, price, description) => {
 					imageUrl,
 					price,
 					description,
+					category,
 					ownerId: userId,
 				}),
 			}
@@ -89,12 +90,20 @@ export const createProduct = (title, imageUrl, price, description) => {
 
 		dispatch({
 			type: CREATE_PRODUCT,
-			productData: { id: respData.name, title, imageUrl, price, description, ownerId: userId },
+			productData: {
+				id: respData.name,
+				title,
+				imageUrl,
+				price,
+				description,
+				category,
+				ownerId: userId,
+			},
 		})
 	}
 }
 
-export const updateProduct = (id, title, imageUrl, price, description) => {
+export const updateProduct = (id, title, imageUrl, price, description, category) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
 		const response = await fetch(
@@ -109,6 +118,7 @@ export const updateProduct = (id, title, imageUrl, price, description) => {
 					imageUrl,
 					price,
 					description,
+					category,
 				}),
 			}
 		)
@@ -120,7 +130,7 @@ export const updateProduct = (id, title, imageUrl, price, description) => {
 		dispatch({
 			type: UPDATE_PRODUCT,
 			pid: id,
-			productData: { title, imageUrl, price, description },
+			productData: { title, imageUrl, price, description, category },
 		})
 	}
 }

@@ -46,6 +46,7 @@ const EditProductScreen = (props) => {
 		state.products.userProducts.find((prod) => prod.id === prodId)
 	)
 	const dispatch = useDispatch()
+	const [cat, setCat] = useState(editedProduct ? editedProduct.category : '')
 
 	const [formState, dispatchFormState] = useReducer(formReducer, {
 		inputValues: {
@@ -53,28 +54,17 @@ const EditProductScreen = (props) => {
 			imageUrl: editedProduct ? editedProduct.imageUrl : '',
 			description: editedProduct ? editedProduct.description : '',
 			price: editedProduct ? editedProduct.price : '',
-			category: editedProduct ? editedProduct.category : '',
 		},
 		inputValidities: {
 			title: editedProduct ? true : false,
 			imageUrl: editedProduct ? true : false,
 			description: editedProduct ? true : false,
 			price: editedProduct ? true : false,
-			category: editedProduct ? true : false,
 		},
 		formIsValid: editedProduct ? true : false,
 	})
 
-	const availableCategories = useSelector((state) => {
-		const categories = []
-		for (const key in state.categories['availableCategories']) {
-			categories.push({
-				id: state.categories['availableCategories'][key].id,
-				title: state.categories['availableCategories'][key].title,
-			})
-		}
-		return categories
-	})
+	const productCategories = useSelector((state) => state.categories.availableCategories)
 
 	useEffect(() => {
 		if (error) {
@@ -99,7 +89,7 @@ const EditProductScreen = (props) => {
 						formState.inputValues.imageUrl,
 						+formState.inputValues.price,
 						formState.inputValues.description,
-						formState.inputValues.category
+						cat
 					)
 				)
 			} else {
@@ -109,7 +99,7 @@ const EditProductScreen = (props) => {
 						formState.inputValues.imageUrl,
 						+formState.inputValues.price,
 						formState.inputValues.description,
-						formState.inputValues.category
+						cat
 					)
 				)
 			}
@@ -155,9 +145,16 @@ const EditProductScreen = (props) => {
 						initiallyValid={!!editedProduct}
 						required
 					/>
-					<Picker selectedValue={editedProduct ? editedProduct.category : ''}>
-						<Picker.Item label={availableCategories[0].title} value={availableCategories[0].id} />
-						<Picker.Item label={availableCategories[1].title} value={availableCategories[1].id} />
+					<Picker selectedValue={cat} onValueChange={(itemValue, itemIndex) => setCat(itemValue)}>
+						{Object.keys(productCategories).map((key) => {
+							return (
+								<Picker.Item
+									label={productCategories[key].title}
+									value={productCategories[key].id}
+									key={key}
+								/>
+							)
+						})}
 					</Picker>
 					<Input
 						id='imageUrl'

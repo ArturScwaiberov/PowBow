@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
 	product: {
 		height: 300,
 		marginHorizontal: 20,
-		marginVertical: 15,
+		marginVertical: 7,
 	},
 	touchable: { borderRadius: 10, overflow: 'hidden' },
 	imageContainer: {
