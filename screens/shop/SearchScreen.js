@@ -7,6 +7,7 @@ import {
 	Image,
 	TouchableOpacity,
 	TouchableNativeFeedback,
+	Platform,
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { Ionicons } from '@expo/vector-icons'
@@ -26,6 +27,12 @@ const SearchScreen = (props) => {
 	const onSearch = (text) => {
 		setSearchValue(text)
 	}
+	const viewProductHandler = (id, title) => {
+		props.navigation.navigate('Detail', {
+			productId: id,
+			productTitle: title,
+		})
+	}
 
 	const loadProducts = useCallback(async () => {
 		setError(null)
@@ -43,7 +50,7 @@ const SearchScreen = (props) => {
 			loadProducts()
 		})
 		return willFocusSub
-	}, [loadProducts])
+	}, [])
 
 	if (error) {
 		return <ErrorMessage onReload={loadProducts} />
@@ -69,31 +76,36 @@ const SearchScreen = (props) => {
 						: products
 				}
 				renderItem={({ item }) => (
-					<View style={styles.contentHolder}>
-						<View style={styles.imageContainer}>
-							<Image style={styles.image} source={{ uri: item.imageUrl }} />
-						</View>
-						<View style={styles.textHolder}>
-							<Text style={styles.title}>{item.title}</Text>
-							<Text style={styles.description}>{item.description}</Text>
-						</View>
-						<View style={styles.priceHolder}>
-							<Text style={styles.price}>{item.price}</Text>
-						</View>
-						<View style={styles.cartHolder}>
-							<TouchableCmp
-								onPress={() => {
-									dispatch(cartActions.addToCart(item))
-								}}
-							>
-								<Ionicons
-									name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
-									size={24}
-									color={Colors.primary}
-								/>
-							</TouchableCmp>
-						</View>
-					</View>
+					<TouchableCmp
+						style={styles.contentHolder}
+						onPress={() => viewProductHandler(item.id, item.title)}
+					>
+						<>
+							<View style={styles.imageContainer}>
+								<Image style={styles.image} source={{ uri: item.imageUrl }} />
+							</View>
+							<View style={styles.textHolder}>
+								<Text style={styles.title}>{item.title}</Text>
+								<Text style={styles.description}>{item.description}</Text>
+							</View>
+							<View style={styles.priceHolder}>
+								<Text style={styles.price}>{item.price} с</Text>
+							</View>
+							<View style={styles.cartHolder}>
+								<TouchableCmp
+									onPress={() => {
+										dispatch(cartActions.addToCart(item))
+									}}
+								>
+									<Ionicons
+										name={Platform.OS === 'android' ? 'md-cart' : 'ios-cart'}
+										size={24}
+										color={Colors.primary}
+									/>
+								</TouchableCmp>
+							</View>
+						</>
+					</TouchableCmp>
 				)}
 				ListEmptyComponent={
 					!isRefreshing && (
@@ -131,8 +143,8 @@ const styles = StyleSheet.create({
 	description: { fontFamily: 'open-sans', fontSize: 14, marginTop: 5 },
 	priceHolder: {
 		position: 'absolute',
-		left: 7,
-		bottom: 7,
+		left: 2,
+		bottom: 2,
 		paddingVertical: 3,
 		paddingHorizontal: 6,
 		backgroundColor: '#f1f1f1',
@@ -147,8 +159,8 @@ const styles = StyleSheet.create({
 	},
 	cartHolder: {
 		position: 'absolute',
-		bottom: 7,
-		right: 10,
+		bottom: 2,
+		right: 2,
 		paddingVertical: 2,
 		paddingHorizontal: 10,
 		backgroundColor: '#f1f1f1',

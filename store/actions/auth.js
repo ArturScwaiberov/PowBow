@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage'
 
-/* export const SIGNUP = 'SIGNUP'
-export const LOGIN = 'LOGIN' */
+export const SIGNUP = 'SIGNUP'
+export const LOGIN = 'LOGIN'
 export const AUTHENTICATE = 'AUTHENTICATE'
 export const LOGOUT = 'LOGOUT'
 
@@ -43,8 +43,8 @@ export const signup = (email, password) => {
 
 		const resData = await response.json()
 
-		/* dispatch({ type: SIGNUP, token: resData.idToken, userId: resData.localId }) */
-		dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000))
+		dispatch({ type: SIGNUP, token: resData.idToken, userId: resData.localId })
+		/* dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000)) */
 
 		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000)
 		saveDataToStorage(resData.idToken, resData.localId, expirationDate)
@@ -82,17 +82,47 @@ export const login = (email, password) => {
 
 		const resData = await response.json()
 
-		/* dispatch({ type: LOGIN, token: resData.idToken, userId: resData.localId }) */
-		dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000))
+		dispatch({ type: LOGIN, token: resData.idToken, userId: resData.localId })
+		/* dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000)) */
 
 		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000)
 		saveDataToStorage(resData.idToken, resData.localId, expirationDate)
 	}
 }
 
+export const resetEmail = (email) => {
+	return async (dispatch) => {
+		const response = await fetch(
+			'https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyDwzIAiaXqBQg3hgBicxeBwlU3Z30KXTpc',
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					requestType: 'PASSWORD_RESET',
+					email: email,
+				}),
+			}
+		)
+
+		if (!response.ok) {
+			const errorResData = await response.json()
+			const errorId = errorResData.error.message
+			console.log(errorId)
+			let message = 'При сбросе пароля произошла ошибка..'
+			if (errorId === 'EMAIL_NOT_FOUND') {
+				message = 'Пользователь с такой почтой не зарегистрирован.'
+			}
+			throw new Error(message)
+		}
+	}
+}
+
 export const logout = () => {
 	clearLogoutTimer()
 	AsyncStorage.removeItem('userData')
+	AsyncStorage.removeItem('userPersonalData')
 	return { type: LOGOUT }
 }
 

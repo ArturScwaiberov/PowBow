@@ -80,7 +80,7 @@ const ProductsOverviewScreen = (props) => {
 			loadProducts()
 		})
 		return willFocusSub
-	}, [loadProducts])
+	}, [])
 
 	if (error) {
 		return <ErrorMessage onReload={loadProducts} />

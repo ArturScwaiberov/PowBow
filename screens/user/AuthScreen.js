@@ -15,6 +15,7 @@ import Card from '../../components/UI/Card'
 import Input from '../../components/UI/Input'
 import Colors from '../../constants/Colors'
 import * as authActions from '../../store/actions/auth'
+import * as userRealtimeActions from '../../store/actions/users'
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE'
 
@@ -46,6 +47,7 @@ const AuthScreen = (props) => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState()
 	const [isSignup, setIsSignup] = useState(false)
+	const [isForgot, setIsForgot] = useState(false)
 	const dispatch = useDispatch()
 
 	const [formState, dispatchFormState] = useReducer(formReducer, {
@@ -68,19 +70,47 @@ const AuthScreen = (props) => {
 
 	const authHandler = async () => {
 		let action
+		let actionRealtime
 		if (isSignup) {
 			action = authActions.signup(formState.inputValues.email, formState.inputValues.password)
+			actionRealtime = userRealtimeActions.createUser(formState.inputValues.email)
 		} else {
 			action = authActions.login(formState.inputValues.email, formState.inputValues.password)
 		}
 		setIsLoading(true)
 		try {
 			await dispatch(action)
+			if (isSignup) {
+				await dispatch(actionRealtime)
+			}
+			await dispatch(userRealtimeActions.fetchUserData())
 			props.navigation.navigate('ProductsNavigator')
 		} catch (err) {
 			setError(err.message)
 			setIsLoading(false)
 		}
+	}
+
+	const forgotHandler = async () => {
+		setIsLoading(true)
+		try {
+			await dispatch(authActions.resetEmail(formState.inputValues.email))
+			setIsSignup(false)
+			setIsForgot(false)
+			setIsLoading(false)
+		} catch (err) {
+			setError(err.message)
+			setIsLoading(false)
+		}
+	}
+
+	const forgotSwitcher = () => {
+		setIsForgot(true)
+	}
+
+	const registerAuthSwitcher = () => {
+		setIsForgot(false)
+		setIsSignup((prevState) => !prevState)
 	}
 
 	const inputChangeHandler = useCallback(
@@ -111,19 +141,21 @@ const AuthScreen = (props) => {
 							onInputChange={inputChangeHandler}
 							initialValue=''
 						/>
-						<Input
-							id='password'
-							label='Пароль'
-							keyboardType='default'
-							secureTextEntry
-							required
-							minLength={5}
-							autoCapitalize='none'
-							errorText='Пожалуйста заполните поле'
-							onInputChange={inputChangeHandler}
-							initialValue=''
-						/>
-						{isSignup && (
+						{!isForgot && (
+							<Input
+								id='password'
+								label='Пароль'
+								keyboardType='default'
+								secureTextEntry
+								required
+								minLength={5}
+								autoCapitalize='none'
+								errorText='Пожалуйста заполните поле'
+								onInputChange={inputChangeHandler}
+								initialValue=''
+							/>
+						)}
+						{isSignup && !isForgot && (
 							<Input
 								id='password'
 								label='Повторите пароль'
@@ -137,24 +169,35 @@ const AuthScreen = (props) => {
 								initialValue=''
 							/>
 						)}
-						<View style={styles.buttonContainer}>
+						<View>
 							{isLoading ? (
 								<ActivityIndicator size='small' color={Colors.primary} />
+							) : isForgot ? (
+								<Button
+									style={styles.button}
+									title={'Восстановить'}
+									color={Colors.primary}
+									onPress={forgotHandler}
+								/>
 							) : (
 								<Button
+									style={styles.button}
 									title={isSignup ? 'Регистрация' : 'Войти'}
 									color={Colors.primary}
 									onPress={authHandler}
 								/>
 							)}
-						</View>
-						<View style={styles.buttonContainer}>
 							<Button
-								title={`Переключить на ${isSignup ? 'Вход' : 'Регистрацию'}`}
+								style={styles.button}
+								title={`${isSignup ? 'У меня есть аккаунт - Вход' : 'Нет аккаунта? Регистрация'}`}
 								color={Colors.accent}
-								onPress={() => {
-									setIsSignup((prevState) => !prevState)
-								}}
+								onPress={registerAuthSwitcher}
+							/>
+							<Button
+								style={styles.button}
+								title='Я забыл(а) пароль'
+								color='#999'
+								onPress={forgotSwitcher}
 							/>
 						</View>
 					</ScrollView>
@@ -168,7 +211,7 @@ const styles = StyleSheet.create({
 	screen: { flex: 1 },
 	gradient: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 	authContainer: { width: '80%', maxWidth: 400, maxHeight: 400, padding: 20 },
-	buttonContainer: { marginTop: 15 },
+	button: { marginVertical: 8 },
 })
 
 export default AuthScreen

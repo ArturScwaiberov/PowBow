@@ -25,6 +25,8 @@ import * as authActions from '../store/actions/auth'
 import NotFoundScreen from '../screens/NotFoundScreen'
 import CategoriesOverviewScreen from '../screens/shop/CategoriesOverviewScreen'
 import SearchScreen from '../screens/shop/SearchScreen'
+import AboutCompanyScreen from '../screens/shop/AboutCompanyScreen'
+import FeedbackScreen from '../screens/shop/FeedbackScreen'
 
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
@@ -40,9 +42,9 @@ const HeaderLeft = ({ navigation }) => {
 	)
 }
 
-const navOptions = () => ({
+const navOptions = {
 	headerStyle: {
-		backgroundColor: Platform.OS === 'android' ? Colors.primary : '',
+		backgroundColor: Platform.OS === 'android' ? Colors.primary : 'white',
 	},
 	headerTitleStyle: {
 		fontFamily: 'open-sans-bold',
@@ -50,7 +52,7 @@ const navOptions = () => ({
 	headerBackTitleStyle: {
 		fontFamily: 'open-sans',
 	},
-})
+}
 
 function ProductsNavigator() {
 	const productsCount = Object.keys(useSelector((state) => state.cart.items)).length
@@ -59,7 +61,7 @@ function ProductsNavigator() {
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
-				navOptions,
+				...navOptions,
 				headerTruncatedBackTitle: '',
 				headerRight: () => {
 					return (
@@ -159,7 +161,7 @@ function OrdersNavigator() {
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
-				navOptions,
+				...navOptions,
 				headerLeft: ({}) => <HeaderLeft navigation={navigation} />,
 			})}
 		>
@@ -175,17 +177,78 @@ function OrdersNavigator() {
 	)
 }
 
+function AboutNavigator() {
+	return (
+		<Stack.Navigator
+			screenOptions={({ navigation }) => ({
+				...navOptions,
+				headerLeft: () => <HeaderLeft navigation={navigation} />,
+			})}
+		>
+			<Stack.Screen
+				name='About'
+				component={AboutCompanyScreen}
+				options={({ route }) => ({
+					title: 'Подробно о нас',
+					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+				})}
+			/>
+		</Stack.Navigator>
+	)
+}
+
+function AuthNavigator() {
+	return (
+		<Stack.Navigator
+			screenOptions={({ navigation }) => ({
+				...navOptions,
+				headerLeft: () => <HeaderLeft navigation={navigation} />,
+			})}
+		>
+			<Stack.Screen
+				name='Auth'
+				component={AuthScreen}
+				options={() => ({
+					title: 'Авторизация',
+					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+					/* headerShown: false, */
+				})}
+			/>
+		</Stack.Navigator>
+	)
+}
+
+function FeedbackNavigator() {
+	return (
+		<Stack.Navigator
+			screenOptions={({ navigation }) => ({
+				...navOptions,
+				headerLeft: () => <HeaderLeft navigation={navigation} />,
+			})}
+		>
+			<Stack.Screen
+				name='Feedback'
+				component={FeedbackScreen}
+				options={() => ({
+					title: 'Свяжитесь с нами',
+					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+				})}
+			/>
+		</Stack.Navigator>
+	)
+}
+
 function AdminNavigator() {
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
 
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
-				navOptions,
+				...navOptions,
 				headerLeft: ({}) => <HeaderLeft navigation={navigation} />,
 			})}
 		>
-			{isSignedIn ? (
+			{isSignedIn && (
 				<>
 					<Stack.Screen
 						name='Admin'
@@ -227,18 +290,6 @@ function AdminNavigator() {
 						}}
 					/>
 				</>
-			) : (
-				<>
-					<Stack.Screen
-						name='Auth'
-						component={AuthScreen}
-						options={() => ({
-							title: 'Авторизация',
-							headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
-							/* headerShown: false, */
-						})}
-					/>
-				</>
 			)}
 		</Stack.Navigator>
 	)
@@ -246,11 +297,36 @@ function AdminNavigator() {
 
 function CustomDrawerContent(props) {
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
+	const getRole = useSelector((state) => state.auth.userSelfData)
+	const isAdmin = getRole[0]?.role ?? ''
+	const userEmail = getRole[0]?.email ?? ''
 	const dispatch = useDispatch()
 
 	return (
 		<DrawerContentScrollView {...props}>
 			<SafeAreaView>
+				{isSignedIn && (
+					<View style={{ backgroundColor: '#d5d5d5' }}>
+						<DrawerItem
+							label={userEmail}
+							icon={({ focused, color }) => (
+								<Ionicons
+									name={
+										isAdmin === 'admin'
+											? Platform.OS === 'android'
+												? 'md-happy'
+												: 'ios-happy'
+											: Platform.OS === 'android'
+											? 'md-contact'
+											: 'ios-contact'
+									}
+									size={26}
+									color={color}
+								/>
+							)}
+						/>
+					</View>
+				)}
 				<DrawerItemList {...props} />
 				{isSignedIn && (
 					<DrawerItem
@@ -279,10 +355,12 @@ function DrawerComponent() {
 	const completedOrdersCount = ordersCount.filter((order) => order.status === 'new').length
 	const productsCount = useSelector((state) => state.products.userProducts).length
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
+	const getRole = useSelector((state) => state.auth.userSelfData)
+	const isAdmin = getRole[0]?.role ?? ''
 
 	return (
 		<Drawer.Navigator
-			drawerType={dimensions.width >= 768 ? 'permanent' : 'slide'}
+			/* drawerType={dimensions.width >= 768 ? 'permanent' : 'slide'} */
 			drawerContent={(props) => <CustomDrawerContent {...props} />}
 			drawerContentOptions={{
 				activeTintColor: Platform.OS === 'android' ? Colors.primary : 'white',
@@ -345,38 +423,74 @@ function DrawerComponent() {
 							),
 						})}
 					/>
+					{isAdmin === 'admin' && (
+						<Drawer.Screen
+							name='AdminNavigator'
+							component={AdminNavigator}
+							options={() => ({
+								title: 'Ваши продукты',
+								drawerIcon: ({ focused, color }) => (
+									<View>
+										<Ionicons
+											name={Platform.OS === 'android' ? 'md-create' : 'ios-create'}
+											size={24}
+											color={color}
+										/>
+
+										<View style={productsCount > 0 ? styles.informerHolder : styles.informerHiden}>
+											<Text style={styles.cartInformer}>{productsCount}</Text>
+										</View>
+									</View>
+								),
+							})}
+						/>
+					)}
+					<Drawer.Screen
+						name='FeedbackNavigator'
+						component={FeedbackNavigator}
+						options={() => ({
+							title: 'Обратная связь',
+							drawerIcon: ({ focused, color }) => (
+								<Ionicons
+									name={Platform.OS === 'android' ? 'md-bulb' : 'ios-bulb'}
+									size={24}
+									color={color}
+								/>
+							),
+						})}
+					/>
 				</>
 			)}
 			<Drawer.Screen
-				name='AdminNavigator'
-				component={AdminNavigator}
+				name='AboutNavigator'
+				component={AboutNavigator}
 				options={() => ({
-					title: isSignedIn ? 'Ваши продукты' : 'Войти',
+					title: 'О компании',
 					drawerIcon: ({ focused, color }) => (
-						<View>
-							<Ionicons
-								name={
-									isSignedIn
-										? Platform.OS === 'android'
-											? 'md-create'
-											: 'ios-create'
-										: Platform.OS === 'android'
-										? 'md-log-in'
-										: 'ios-log-in'
-								}
-								size={24}
-								color={color}
-							/>
-
-							{isSignedIn && (
-								<View style={productsCount > 0 ? styles.informerHolder : styles.informerHiden}>
-									<Text style={styles.cartInformer}>{productsCount}</Text>
-								</View>
-							)}
-						</View>
+						<Ionicons
+							name={Platform.OS === 'android' ? 'md-ribbon' : 'ios-ribbon'}
+							size={24}
+							color={color}
+						/>
 					),
 				})}
 			/>
+			{!isSignedIn && (
+				<Drawer.Screen
+					name='AdminNavigator'
+					component={AuthNavigator}
+					options={() => ({
+						title: 'Войти',
+						drawerIcon: ({ focused, color }) => (
+							<Ionicons
+								name={Platform.OS === 'android' ? 'md-log-in' : 'ios-log-in'}
+								size={24}
+								color={color}
+							/>
+						),
+					})}
+				/>
+			)}
 		</Drawer.Navigator>
 	)
 }

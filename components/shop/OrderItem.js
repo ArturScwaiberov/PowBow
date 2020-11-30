@@ -53,9 +53,10 @@ const OrderItem = (props) => {
 							quantity={cartItem.quantity}
 							amount={cartItem.sum}
 							title={cartItem.productTitle}
+							price={cartItem.productPrice}
 						/>
 					))}
-					<Text>
+					<Text style={styles.status}>
 						Статус:{' '}
 						{props.status === 'new'
 							? 'Новый'
@@ -112,6 +113,10 @@ const styles = StyleSheet.create({
 		fontFamily: 'open-sans',
 		fontSize: 16,
 		color: '#888',
+	},
+	status: {
+		fontFamily: 'open-sans',
+		marginTop: 5,
 	},
 })
 

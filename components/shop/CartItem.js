@@ -25,9 +25,11 @@ const CartItem = (props) => {
 
 	return (
 		<View style={styles.cartItem}>
-			<View style={styles.itemDataText}>
-				<Text style={styles.quantity}>{props.quantity} x </Text>
+			<View>
 				<Text style={styles.mainText}>{props.title}</Text>
+				<Text style={styles.quantity}>
+					{props.quantity} x {props.price} = <Text style={styles.mainText}>{props.amount}</Text>
+				</Text>
 			</View>
 			<View style={styles.itemData}>
 				{props.deletable && (
@@ -39,21 +41,18 @@ const CartItem = (props) => {
 					</View>
 				)}
 			</View>
-			<View style={styles.itemAmount}>
-				<Text style={styles.mainText}>{props.amount}</Text>
-			</View>
 		</View>
 	)
 }
 
 const styles = StyleSheet.create({
 	cartItem: {
-		marginVertical: 10,
+		marginVertical: 4,
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
 	},
-	itemDataText: { flexDirection: 'row', width: '60%', alignItems: 'center' },
+	itemDataText: { flexDirection: 'row', width: '70%', alignItems: 'center' },
 	itemData: {
 		flexDirection: 'row',
 		alignItems: 'center',

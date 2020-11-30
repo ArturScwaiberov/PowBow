@@ -13,17 +13,17 @@ export const fetchOrders = () => {
 				throw new Error('При обновлении корзины произошла ошибка...')
 			}
 
-			const respData = await response.json()
+			const resData = await response.json()
 			const loadedOrders = []
 
-			for (const key in respData) {
+			for (const key in resData) {
 				loadedOrders.push(
 					new Order(
 						key,
-						respData[key].cartItems,
-						respData[key].totalAmount,
-						new Date(respData[key].date),
-						respData[key].status
+						resData[key].cartItems,
+						resData[key].totalAmount,
+						new Date(resData[key].date),
+						resData[key].status
 					)
 				)
 			}
@@ -35,7 +35,7 @@ export const fetchOrders = () => {
 	}
 }
 
-export const addOrder = (cartItems, totalAmount) => {
+export const addOrder = (cartItems, totalAmount, phone, adress, payMethod) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
 		const userId = getState().auth.userId
@@ -53,6 +53,9 @@ export const addOrder = (cartItems, totalAmount) => {
 					totalAmount,
 					date: date.toISOString(),
 					status,
+					phone,
+					adress,
+					payMethod,
 				}),
 			}
 		)
@@ -71,7 +74,31 @@ export const addOrder = (cartItems, totalAmount) => {
 				amount: totalAmount,
 				date: date,
 				status: status,
+				payMethod,
 			},
 		})
+	}
+}
+
+export const toMailOrder = (products, totalAmount, phone, adress, payMethod) => {
+	return async (dispatch, getState) => {
+		const token = getState().auth.token
+		const response = await fetch(`https://shopapp-6f444.firebaseio.com/mail.json?auth=${token}`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				products,
+				totalAmount,
+				phone,
+				adress,
+				payMethod,
+			}),
+		})
+
+		if (!response.ok) {
+			throw new Error('При записи для отправки на почту произошла ошибка...')
+		}
 	}
 }

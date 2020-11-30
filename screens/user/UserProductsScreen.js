@@ -21,6 +21,7 @@ const UserProductsScreen = (props) => {
 	}
 
 	const loadProducts = useCallback(async () => {
+		let mounted = true
 		setError(null)
 		setIsRefreshing(true)
 		try {
@@ -28,7 +29,14 @@ const UserProductsScreen = (props) => {
 		} catch (err) {
 			setError(err.message)
 		}
-		setIsRefreshing(false)
+
+		if (mounted) {
+			setIsRefreshing(false)
+		}
+
+		return function cleanup() {
+			mounted = false
+		}
 	}, [dispatch, setIsRefreshing, setError])
 
 	useEffect(() => {

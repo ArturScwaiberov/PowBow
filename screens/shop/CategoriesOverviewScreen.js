@@ -11,7 +11,9 @@ import {
 import { useDispatch, useSelector } from 'react-redux'
 
 import ErrorMessage from '../../components/UI/ErrorMessage'
+import Slider from '../../components/UI/Slider'
 import * as categoriesActions from '../../store/actions/categories'
+import * as userRealtimeActions from '../../store/actions/users'
 
 const CategoriesOverviewScreen = (props) => {
 	const [isRefreshing, setIsRefreshing] = useState(false)
@@ -37,12 +39,13 @@ const CategoriesOverviewScreen = (props) => {
 
 		try {
 			await dispatch(categoriesActions.fetchCategories())
+			await dispatch(userRealtimeActions.fetchUserData())
 		} catch (err) {
 			setError(err)
 		}
 
 		setIsRefreshing(false)
-	}, [dispatch, setIsRefreshing, setError])
+	}, [dispatch, setIsRefreshing, isRefreshing, setError, error])
 
 	useEffect(() => {
 		const willFocusSub = props.navigation.addListener('focus', () => {
@@ -50,7 +53,7 @@ const CategoriesOverviewScreen = (props) => {
 		})
 
 		return willFocusSub
-	}, [loadCategories])
+	}, [])
 
 	if (error) {
 		console.log(error)
@@ -58,27 +61,32 @@ const CategoriesOverviewScreen = (props) => {
 	}
 
 	return (
-		<FlatList
-			onRefresh={loadCategories}
-			refreshing={isRefreshing}
-			columnWrapperStyle={{ padding: 2 }}
-			data={categories}
-			horizontal={false}
-			numColumns={2}
-			keyExtractor={(item) => item.id}
-			renderItem={(itemData) => (
-				<TouchableCmp
-					style={styles.screen}
-					onPress={() => {
-						viewCategoryHandler(itemData.item.id, itemData.item.title)
-					}}
-					useForeground
-				>
-					<Image style={styles.image} source={{ uri: itemData.item.imageUrl }} />
-					<Text style={styles.title}>{itemData.item.title}</Text>
-				</TouchableCmp>
-			)}
-		/>
+		<>
+			<FlatList
+				onRefresh={loadCategories}
+				refreshing={isRefreshing}
+				columnWrapperStyle={{ paddingHorizontal: 2 }}
+				data={categories}
+				horizontal={false}
+				numColumns={2}
+				keyExtractor={(item) => item.id}
+				renderItem={(itemData) => (
+					<TouchableCmp
+						style={styles.screen}
+						onPress={() => {
+							viewCategoryHandler(itemData.item.id, itemData.item.title)
+						}}
+						useForeground
+					>
+						<>
+							<Image style={styles.image} source={{ uri: itemData.item.imageUrl }} />
+							<Text style={styles.title}>{itemData.item.title}</Text>
+						</>
+					</TouchableCmp>
+				)}
+				ListHeaderComponent={<Slider navigation={props.navigation} />}
+			/>
+		</>
 	)
 }
 

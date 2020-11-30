@@ -1,5 +1,13 @@
 import React, { useEffect, useCallback, useReducer, useState } from 'react'
-import { StyleSheet, View, ScrollView, Alert, Button, KeyboardAvoidingView } from 'react-native'
+import {
+	StyleSheet,
+	View,
+	ScrollView,
+	Alert,
+	Button,
+	KeyboardAvoidingView,
+	Text,
+} from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { Picker } from '@react-native-picker/picker'
 import { YellowBox } from 'react-native'
@@ -46,7 +54,6 @@ const EditProductScreen = (props) => {
 		state.products.userProducts.find((prod) => prod.id === prodId)
 	)
 	const dispatch = useDispatch()
-	const [cat, setCat] = useState(editedProduct ? editedProduct.category : '')
 
 	const [formState, dispatchFormState] = useReducer(formReducer, {
 		inputValues: {
@@ -65,6 +72,8 @@ const EditProductScreen = (props) => {
 	})
 
 	const productCategories = useSelector((state) => state.categories.availableCategories)
+
+	const [cat, setCat] = useState(editedProduct ? editedProduct.category : productCategories[0].id)
 
 	useEffect(() => {
 		if (error) {
@@ -109,7 +118,7 @@ const EditProductScreen = (props) => {
 		}
 
 		setIsLoading(false)
-	}, [dispatch, prodId, formState])
+	}, [dispatch, prodId, formState, cat])
 
 	useEffect(() => {
 		props.navigation.setParams({ submit: submitHandler })
@@ -145,17 +154,6 @@ const EditProductScreen = (props) => {
 						initiallyValid={!!editedProduct}
 						required
 					/>
-					<Picker selectedValue={cat} onValueChange={(itemValue, itemIndex) => setCat(itemValue)}>
-						{Object.keys(productCategories).map((key) => {
-							return (
-								<Picker.Item
-									label={productCategories[key].title}
-									value={productCategories[key].id}
-									key={key}
-								/>
-							)
-						})}
-					</Picker>
 					<Input
 						id='imageUrl'
 						label='Картинка'
@@ -190,6 +188,18 @@ const EditProductScreen = (props) => {
 						required
 						minLength={5}
 					/>
+					<Text style={styles.label}>Категория</Text>
+					<Picker selectedValue={cat} onValueChange={(itemValue) => setCat(itemValue)}>
+						{Object.keys(productCategories).map((key) => {
+							return (
+								<Picker.Item
+									label={productCategories[key].title}
+									value={productCategories[key].id}
+									key={key}
+								/>
+							)
+						})}
+					</Picker>
 					<Button title='Готово' color={Colors.primary} onPress={submitHandler} />
 					<Button
 						title='Отмена'
@@ -206,6 +216,7 @@ const EditProductScreen = (props) => {
 
 const styles = StyleSheet.create({
 	form: { margin: 20 },
+	label: { fontFamily: 'open-sans-bold', marginVertical: 8 },
 })
 
 export default EditProductScreen

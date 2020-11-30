@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-community/async-storage'
 import { useDispatch } from 'react-redux'
 
 import * as authActions from '../store/actions/auth'
+import * as userRealtimeActions from '../store/actions/users'
 /* import Loading from '../components/UI/Loading' */
 
 const StartupScreen = (props) => {
@@ -28,7 +29,8 @@ const StartupScreen = (props) => {
 			}
 			const expirationTime = expirationDate.getTime() - new Date().getTime()
 
-			dispatch(authActions.authenticate(userId, token, expirationTime))
+			await dispatch(authActions.authenticate(userId, token, expirationTime))
+			await dispatch(userRealtimeActions.fetchUserData())
 			props.navigation.navigate('ProductsNavigator')
 		}
 

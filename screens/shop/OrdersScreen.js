@@ -16,6 +16,7 @@ const OrdersScreen = (props) => {
 	const dispatch = useDispatch()
 
 	const loadOrders = useCallback(async () => {
+		let mounted = true
 		setError()
 		setIsLoading(true)
 		try {
@@ -23,12 +24,19 @@ const OrdersScreen = (props) => {
 		} catch (err) {
 			setError(err.message)
 		}
-		setIsLoading(false)
-	}, [dispatch, setError, setIsLoading])
+
+		if (mounted) {
+			setIsLoading(false)
+		}
+
+		return function cleanup() {
+			mounted = false
+		}
+	}, [dispatch, setError, setIsLoading, isLoading, error])
 
 	useEffect(() => {
 		loadOrders()
-	}, [loadOrders])
+	}, [])
 
 	if (error) {
 		return <ErrorMessage onReload={loadOrders} />
