@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useReducer, useState } from 'react'
-import { StyleSheet, View, Text, Button, FlatList, Alert, TouchableOpacity } from 'react-native'
+import { StyleSheet, View, Text, Button, FlatList, Alert, TouchableOpacity, Platform, TouchableNativeFeedback } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { FontAwesome } from '@expo/vector-icons'
 
