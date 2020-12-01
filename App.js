@@ -6,6 +6,8 @@ import { AppLoading } from 'expo'
 import * as Font from 'expo-font'
 import ReduxThunk from 'redux-thunk'
 
+import './services/i18next';
+
 /* import NavigationContainer from './navigation/NavigationContainer' */
 import ShopNavigator from './navigation/ShopNavigator'
 import categoryReducer from './store/reducers/categories'

@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { StyleSheet, View, Text, Button } from 'react-native'
 import AsyncStorage from '@react-native-community/async-storage'
 import { useDispatch } from 'react-redux'
+import i18n from 'i18next';
 
 import * as authActions from '../store/actions/auth'
 import * as userRealtimeActions from '../store/actions/users'
+import { withTranslation  } from "react-i18next";
 /* import Loading from '../components/UI/Loading' */
 
 const StartupScreen = (props) => {
@@ -43,15 +45,21 @@ const StartupScreen = (props) => {
 
 	return (
 		<View style={styles.screen}>
+			<Button
+				title='Сменить язык'
+				onPress={() => {
+					i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+				}}
+			/>
 			<Text>Welcome Screen</Text>
 			<Button
-				title='Перейти в магазин'
+				title={i18n.t('welcome.goToMagazine')}
 				onPress={() => {
 					props.navigation.navigate('ProductsNavigator')
 				}}
 			/>
 			<Button
-				title='Авторизоваться'
+				title={i18n.t('welcome.signIn')}
 				onPress={() => {
 					props.navigation.navigate('AdminNavigator')
 				}}
@@ -64,4 +72,4 @@ const styles = StyleSheet.create({
 	screen: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 })
 
-export default StartupScreen
+export default withTranslation()(StartupScreen);

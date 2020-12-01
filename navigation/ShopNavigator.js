@@ -27,7 +27,10 @@ import CategoriesOverviewScreen from '../screens/shop/CategoriesOverviewScreen'
 import SearchScreen from '../screens/shop/SearchScreen'
 import AboutCompanyScreen from '../screens/shop/AboutCompanyScreen'
 import FeedbackScreen from '../screens/shop/FeedbackScreen'
+import { withTranslation  } from "react-i18next";
+import i18n from '../services/i18next'
 
+i18n
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
@@ -54,7 +57,7 @@ const navOptions = {
 	},
 }
 
-function ProductsNavigator() {
+const ProductsNavigator = withTranslation()(({t, i18n}) => {
 	const productsCount = Object.keys(useSelector((state) => state.cart.items)).length
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
 
@@ -155,7 +158,7 @@ function ProductsNavigator() {
 			</>
 		</Stack.Navigator>
 	)
-}
+})
 
 function OrdersNavigator() {
 	return (
@@ -238,7 +241,7 @@ function FeedbackNavigator() {
 	)
 }
 
-function AdminNavigator() {
+const AdminNavigator = withTranslation() (({t, i18n}) => {
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
 
 	return (
@@ -293,7 +296,7 @@ function AdminNavigator() {
 			)}
 		</Stack.Navigator>
 	)
-}
+})
 
 function CustomDrawerContent(props) {
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
@@ -495,7 +498,7 @@ function DrawerComponent() {
 	)
 }
 
-function App() {
+function App({ t, i18n }) {
 	return (
 		<NavigationContainer>
 			<DrawerComponent />
