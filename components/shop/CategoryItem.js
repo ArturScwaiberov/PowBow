@@ -48,7 +48,6 @@ const styles = StyleSheet.create({
 		overflow: 'hidden',
 	},
 	image: { width: '100%', height: '100%' },
-	details: { alignItems: 'center', height: '20%', padding: 10 },
 	title: {
 		fontFamily: 'open-sans-bold',
 		fontSize: 18,
@@ -59,7 +58,6 @@ const styles = StyleSheet.create({
 		width: '100%',
 		textAlign: 'center',
 	},
-	price: { fontSize: 14, color: '#888', fontFamily: 'open-sans' },
 })
 
 export default CategoryItem

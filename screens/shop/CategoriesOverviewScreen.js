@@ -1,14 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import {
-	StyleSheet,
-	Text,
-	FlatList,
-	Image,
-	TouchableOpacity,
-	Platform,
-	TouchableNativeFeedback,
-	View,
-} from 'react-native'
+import { FlatList, TouchableOpacity, Platform, TouchableNativeFeedback } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
 import CategoryItem from '../../components/shop/CategoryItem'
@@ -78,32 +69,12 @@ const CategoriesOverviewScreen = (props) => {
 						onSelect={() => {
 							viewCategoryHandler(itemData.item.id, itemData.item.title)
 						}}
-					>
-						{/* <Image style={styles.image} source={{ uri: itemData.item.imageUrl }} />
-						<Text style={styles.title}>{itemData.item.title}</Text> */}
-					</CategoryItem>
+					/>
 				)}
 				ListHeaderComponent={<Slider navigation={props.navigation} />}
 			/>
 		</>
 	)
 }
-
-const styles = StyleSheet.create({
-	screen: { flex: 1, alignItems: 'center', padding: 1 },
-	category: { width: '100%', height: '100%' },
-	title: {
-		fontFamily: 'open-sans-bold',
-		fontSize: 18,
-		position: 'absolute',
-		marginTop: 2,
-		paddingTop: 3,
-		paddingBottom: 3,
-		backgroundColor: 'rgba(255,255,255,0.5)',
-		width: '98%',
-		textAlign: 'center',
-	},
-	image: { width: '100%', height: 220, borderColor: '#ccc', borderWidth: 1 },
-})
 
 export default CategoriesOverviewScreen
