@@ -7,9 +7,11 @@ import {
 	TouchableOpacity,
 	Platform,
 	TouchableNativeFeedback,
+	View,
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 
+import CategoryItem from '../../components/shop/CategoryItem'
 import ErrorMessage from '../../components/UI/ErrorMessage'
 import Slider from '../../components/UI/Slider'
 import * as categoriesActions from '../../store/actions/categories'
@@ -71,18 +73,15 @@ const CategoriesOverviewScreen = (props) => {
 				numColumns={2}
 				keyExtractor={(item) => item.id}
 				renderItem={(itemData) => (
-					<TouchableCmp
-						style={styles.screen}
-						onPress={() => {
+					<CategoryItem
+						item={itemData.item}
+						onSelect={() => {
 							viewCategoryHandler(itemData.item.id, itemData.item.title)
 						}}
-						useForeground
 					>
-						<>
-							<Image style={styles.image} source={{ uri: itemData.item.imageUrl }} />
-							<Text style={styles.title}>{itemData.item.title}</Text>
-						</>
-					</TouchableCmp>
+						{/* <Image style={styles.image} source={{ uri: itemData.item.imageUrl }} />
+						<Text style={styles.title}>{itemData.item.title}</Text> */}
+					</CategoryItem>
 				)}
 				ListHeaderComponent={<Slider navigation={props.navigation} />}
 			/>
@@ -92,6 +91,7 @@ const CategoriesOverviewScreen = (props) => {
 
 const styles = StyleSheet.create({
 	screen: { flex: 1, alignItems: 'center', padding: 1 },
+	category: { width: '100%', height: '100%' },
 	title: {
 		fontFamily: 'open-sans-bold',
 		fontSize: 18,

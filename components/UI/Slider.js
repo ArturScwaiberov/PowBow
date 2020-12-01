@@ -1,5 +1,5 @@
 import React from 'react'
-import { FlatListSlider } from 'react-native-flatlist-slider'
+import { FlatListSlider } from './slider'
 
 const Slider = (props) => {
 	const images = [

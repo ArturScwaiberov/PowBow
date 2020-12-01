@@ -76,18 +76,17 @@ const SearchScreen = (props) => {
 						: products
 				}
 				renderItem={({ item }) => (
-					<TouchableCmp
-						style={styles.contentHolder}
-						onPress={() => viewProductHandler(item.id, item.title)}
-					>
-						<>
+					<TouchableCmp onPress={() => viewProductHandler(item.id, item.title)}>
+						<View style={styles.contentHolder}>
 							<View style={styles.imageContainer}>
 								<Image style={styles.image} source={{ uri: item.imageUrl }} />
 							</View>
+
 							<View style={styles.textHolder}>
 								<Text style={styles.title}>{item.title}</Text>
 								<Text style={styles.description}>{item.description}</Text>
 							</View>
+
 							<View style={styles.priceHolder}>
 								<Text style={styles.price}>{item.price} с</Text>
 							</View>
@@ -104,7 +103,7 @@ const SearchScreen = (props) => {
 									/>
 								</TouchableCmp>
 							</View>
-						</>
+						</View>
 					</TouchableCmp>
 				)}
 				ListEmptyComponent={
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
 	contentHolder: {
 		flexDirection: 'row',
 		marginHorizontal: 20,
-		marginTop: 10,
+		marginVertical: 5,
 		flex: 1,
 		backgroundColor: '#f9f9f9',
 		borderRadius: 10,
@@ -140,7 +139,7 @@ const styles = StyleSheet.create({
 		flex: 1,
 	},
 	title: { fontFamily: 'open-sans-bold', fontSize: 16, marginTop: 5 },
-	description: { fontFamily: 'open-sans', fontSize: 14, marginTop: 5 },
+	description: { fontFamily: 'open-sans', fontSize: 14, marginVertical: 5, maxHeight: 80 },
 	priceHolder: {
 		position: 'absolute',
 		left: 2,

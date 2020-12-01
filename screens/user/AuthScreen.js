@@ -7,6 +7,7 @@ import {
 	Button,
 	ActivityIndicator,
 	Alert,
+	Platform,
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useDispatch } from 'react-redux'
@@ -84,6 +85,7 @@ const AuthScreen = (props) => {
 				await dispatch(actionRealtime)
 			}
 			await dispatch(userRealtimeActions.fetchUserData())
+			setIsConfirmed(false)
 			props.navigation.navigate('ProductsNavigator')
 		} catch (err) {
 			setError(err.message)
@@ -126,7 +128,11 @@ const AuthScreen = (props) => {
 	)
 
 	return (
-		<KeyboardAvoidingView behavior='padding' keyboardVerticalOffset={50} style={styles.screen}>
+		<KeyboardAvoidingView
+			behavior={Platform.OS === 'ios' ? 'padding' : ''}
+			keyboardVerticalOffset={Platform.OS === 'ios' ? 50 : null}
+			style={styles.screen}
+		>
 			<LinearGradient colors={['#ffedff', '#ffe3ff']} style={styles.gradient}>
 				<Card style={styles.authContainer}>
 					<ScrollView>
@@ -157,7 +163,7 @@ const AuthScreen = (props) => {
 						)}
 						{isSignup && !isForgot && (
 							<Input
-								id='password'
+								id='passwordConfirm'
 								label='Повторите пароль'
 								keyboardType='default'
 								secureTextEntry
@@ -167,6 +173,7 @@ const AuthScreen = (props) => {
 								errorText='Пожалуйста заполните поле'
 								onInputChange={inputChangeHandler}
 								initialValue=''
+								initiallyValid={false}
 							/>
 						)}
 						<View>
@@ -178,6 +185,7 @@ const AuthScreen = (props) => {
 									title={'Восстановить'}
 									color={Colors.primary}
 									onPress={forgotHandler}
+									disabled={!formState.formIsValid}
 								/>
 							) : (
 								<Button
@@ -185,6 +193,7 @@ const AuthScreen = (props) => {
 									title={isSignup ? 'Регистрация' : 'Войти'}
 									color={Colors.primary}
 									onPress={authHandler}
+									disabled={!formState.formIsValid}
 								/>
 							)}
 							<Button
