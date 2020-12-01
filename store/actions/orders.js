@@ -82,8 +82,14 @@ export const addOrder = (cartItems, totalAmount, phone, adress, payMethod) => {
 
 export const toMailOrder = (products, totalAmount, phone, adress, payMethod) => {
 	return async (dispatch, getState) => {
-		const token = getState().auth.token
-		const response = await fetch(`https://shopapp-6f444.firebaseio.com/mail.json?auth=${token}`, {
+		const token = 'powpowtoken';
+		console.log(products,
+			totalAmount,
+			phone,
+			adress,
+			payMethod,
+			token);
+		const response = await fetch(`https://evamall.altkg.com/mail`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -94,6 +100,7 @@ export const toMailOrder = (products, totalAmount, phone, adress, payMethod) => 
 				phone,
 				adress,
 				payMethod,
+				token
 			}),
 		})
 
