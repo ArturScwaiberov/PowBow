@@ -11,7 +11,6 @@ import Input from '../../components/UI/Input'
 import * as cartActions from '../../store/actions/cart'
 import * as ordersActions from '../../store/actions/orders'
 import * as userRealtimeActions from '../../store/actions/users'
-import AsyncStorage from '@react-native-community/async-storage'
 
 const FORM_INPUT_UPDATE = 'FORM_INPUT_UPDATE'
 

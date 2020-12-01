@@ -48,7 +48,9 @@ const StartupScreen = (props) => {
 			<Button
 				title='Сменить язык'
 				onPress={() => {
-					i18n.changeLanguage(i18n.language === 'ru' ? 'en' : 'ru');
+					const lang = i18n.language === 'ru' ? 'en' : 'ru'
+					i18n.changeLanguage(lang);
+					AsyncStorage.setItem('lang', lang);
 				}}
 			/>
 			<Text>Welcome Screen</Text>

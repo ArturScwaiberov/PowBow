@@ -1,10 +1,11 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { createStore, combineReducers, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
 import { AppLoading } from 'expo'
 import * as Font from 'expo-font'
 import ReduxThunk from 'redux-thunk'
+import AsyncStorage from '@react-native-community/async-storage'
 
 import './services/i18next';
 
@@ -15,6 +16,7 @@ import productReducer from './store/reducers/products'
 import cartReducer from './store/reducers/cart'
 import authReducer from './store/reducers/auth'
 import ordersReducer from './store/reducers/orders'
+import i18n from './services/i18next'
 
 const rootReducer = combineReducers({
 	auth: authReducer,
@@ -23,6 +25,7 @@ const rootReducer = combineReducers({
 	cart: cartReducer,
 	orders: ordersReducer,
 })
+
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
 
@@ -35,6 +38,14 @@ const fetchFonts = () => {
 
 export default function App() {
 	const [fontLoaded, setFontLoaded] = useState(false)
+
+	useEffect(() => {
+		async function setLanguage() {
+			const lang = await AsyncStorage.getItem('lang') || 'ru';
+			i18n.changeLanguage(lang);
+		}
+		setLanguage();	
+	}, [])
 
 	if (!fontLoaded) {
 		return (

@@ -81,14 +81,9 @@ export const addOrder = (cartItems, totalAmount, phone, adress, payMethod) => {
 }
 
 export const toMailOrder = (products, totalAmount, phone, adress, payMethod) => {
+	console.log(products, totalAmount, phone, adress, payMethod);
 	return async (dispatch, getState) => {
 		const token = 'powpowtoken';
-		console.log(products,
-			totalAmount,
-			phone,
-			adress,
-			payMethod,
-			token);
 		const response = await fetch(`https://evamall.altkg.com/mail`, {
 			method: 'POST',
 			headers: {
