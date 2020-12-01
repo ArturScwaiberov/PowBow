@@ -53,13 +53,13 @@ const StartupScreen = (props) => {
 			/>
 			<Text>Welcome Screen</Text>
 			<Button
-				title={i18n.t('welcome.goToMagazine')}
+				title={i18n.t('welcome.titleDrawer')}
 				onPress={() => {
 					props.navigation.navigate('ProductsNavigator')
 				}}
 			/>
 			<Button
-				title={i18n.t('welcome.signIn')}
+				title={i18n.t('welcome.toAuth')}
 				onPress={() => {
 					props.navigation.navigate('AdminNavigator')
 				}}
