@@ -86,7 +86,45 @@ export const login = (email, password) => {
 		/* dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000)) */
 
 		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000)
-		saveDataToStorage(resData.idToken, resData.localId, expirationDate)
+		saveDataToStorage(resData.idToken, resData.localId, expirationDate, resData.refreshToken)
+	}
+}
+
+export const refreshToken = () => {
+	return async () => {
+		console.log('Token has been updated...')
+		const userData = JSON.parse(await AsyncStorage.getItem('userData'))
+		
+		const response = await fetch(
+			'https://securetoken.googleapis.com/v1/token?key=AIzaSyDwzIAiaXqBQg3hgBicxeBwlU3Z30KXTpc',
+			{
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					grant_type: 'refresh_token',
+					refresh_token: userData.refreshToken,
+				}),
+			}
+		)
+
+		if (!response.ok) {
+			const errorResData = await response.json()
+			const errorId = errorResData.error.message
+			let message = 'При входе произошла ошибка..'
+			if (errorId === 'INVALID_PASSWORD') {
+				message = 'Введенный пароль не подходит..'
+			} else if (errorId === 'EMAIL_NOT_FOUND') {
+				message = 'Такой адрес не зарегистрирован..'
+			}
+			throw new Error(message)
+		}
+
+		const resData = await response.json()
+
+		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expires_in) * 1000)
+		saveDataToStorage(resData.idToken, resData.localId, expirationDate, resData.refreshToken)
 	}
 }
 
@@ -140,13 +178,14 @@ const setLogoutTimer = (expirationTime) => {
 	}
 }
 
-const saveDataToStorage = (token, userId, expirationDate) => {
+const saveDataToStorage = (token, userId, expirationDate, refreshToken) => {
 	AsyncStorage.setItem(
 		'userData',
 		JSON.stringify({
 			token: token,
 			userId: userId,
 			expiryDate: expirationDate.toISOString(),
+			refreshToken: refreshToken,
 		})
 	)
 }

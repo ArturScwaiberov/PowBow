@@ -24,10 +24,14 @@ const StartupScreen = (props) => {
 			const { token, userId, expiryDate } = transformedData
 			const expirationDate = new Date(expiryDate)
 
-			if (expirationDate <= new Date() || !token || !userId) {
+			if (!token || !userId) {
 				dispatch(authActions.logout())
 				props.navigation.navigate('AdminNavigator')
 				return
+			}
+
+			if (expirationDate <= new Date()) {
+				await dispatch(authActions.refreshToken())
 			}
 			const expirationTime = expirationDate.getTime() - new Date().getTime()
 
