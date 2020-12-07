@@ -5,7 +5,7 @@ export const CREATE_USER = 'CREATE_USER'
 export const SET_USER_DATA = 'SET_USER_DATA'
 export const UPDATE_USER = 'UPDATE_USER'
 
-export const fetchUserData = () => {
+export const fetchUserData = (fetchError) => {
 	return async (dispatch, getState) => {
 		const userId = getState().auth.userId
 
@@ -13,7 +13,7 @@ export const fetchUserData = () => {
 			const response = await fetch(`https://shopapp-6f444.firebaseio.com/users.json`)
 
 			if (!response.ok) {
-				throw new Error('При получении информации пользователя произошла ошибка...')
+				throw new Error(fetchError)
 			}
 
 			const respData = await response.json()
@@ -39,7 +39,7 @@ export const fetchUserData = () => {
 	}
 }
 
-export const createUser = (email) => {
+export const createUser = (email, createUserError) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
 		const userId = getState().auth.userId
@@ -61,7 +61,7 @@ export const createUser = (email) => {
 		})
 
 		if (!response.ok) {
-			throw new Error('При создании юзера произошла ошибка...')
+			throw new Error(createUserError)
 		}
 
 		const respData = await response.json()
@@ -72,6 +72,8 @@ export const createUser = (email) => {
 				catId: respData.name,
 				id: userId,
 				email,
+				phone,
+				adress,
 				role,
 			},
 		})
@@ -80,9 +82,10 @@ export const createUser = (email) => {
 	}
 }
 
-export const updateUser = (catId, phone, adress) => {
+export const updateUser = (catId, phone, adress, updateUserError) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
+		const userId = getState().auth.userId
 		const response = await fetch(
 			`https://shopapp-6f444.firebaseio.com/users/${catId}.json?auth=${token}`,
 			{
@@ -98,7 +101,7 @@ export const updateUser = (catId, phone, adress) => {
 		)
 
 		if (!response.ok) {
-			throw new Error('Возникла ошибка при обновлении пользовательских данных')
+			throw new Error(updateUserError)
 		}
 
 		dispatch({

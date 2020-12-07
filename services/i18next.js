@@ -1,30 +1,26 @@
-import i18n from "i18next";
-import { initReactI18next  } from "react-i18next";
+import i18n from 'i18next'
+import { initReactI18next } from 'react-i18next'
 
-
-import translationRU from '../translations/powbow-ru.json';
-import translationEN from '../translations/powbow-en.json';
-
+import translationRU from '../translations/powbow-ru.json'
+import translationKG from '../translations/powbow-kg.json'
 
 // the translations
 const resources = {
-    ru: {
-        translation: translationRU,
-    },
-    en: {
-        translation: translationEN,
-    }
-};
+	ru: {
+		translation: translationRU,
+	},
+	kg: {
+		translation: translationKG,
+	},
+}
 
-i18n
-  .use(initReactI18next)
-  .init({
-    resources,
-    keySeparator: '.',
-    lng: 'ru',
-    interpolation: {
-      escapeValue: false
-    }
-  });
+i18n.use(initReactI18next).init({
+	resources,
+	keySeparator: '.',
+	lng: 'ru',
+	interpolation: {
+		escapeValue: false,
+	},
+})
 
-export default i18n;
+export default i18n

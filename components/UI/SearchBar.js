@@ -1,7 +1,10 @@
 import React from 'react'
 import { StyleSheet, View, TextInput } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 const SearchBar = (props) => {
+	const { t, i18n } = useTranslation()
+
 	return (
 		<View style={styles.barHolder}>
 			<TextInput
@@ -10,7 +13,7 @@ const SearchBar = (props) => {
 				clearButtonMode='always'
 				value={props.searchValue}
 				onChangeText={props.onSearch}
-				placeholder='Быстрый поиск в разделе..'
+				placeholder={t('search.label')}
 				style={styles.input}
 			/>
 		</View>

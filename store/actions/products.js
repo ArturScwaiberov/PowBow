@@ -5,14 +5,14 @@ export const CREATE_PRODUCT = 'CREATE_PRODUCT'
 export const UPDATE_PRODUCT = 'UPDATE_PRODUCT'
 export const SET_PRODUCTS = 'SET_PRODUCTS'
 
-export const fetchProducts = () => {
+export const fetchProducts = (fetchError) => {
 	return async (dispatch, getState) => {
 		const userId = getState().auth.userId
 		try {
 			const response = await fetch('https://shopapp-6f444.firebaseio.com/products.json')
 
 			if (!response.ok) {
-				throw new Error('Something went wrong when we recieve data..')
+				throw new Error(fetchError)
 			}
 
 			const respData = await response.json()
@@ -42,7 +42,7 @@ export const fetchProducts = () => {
 	}
 }
 
-export const deleteProduct = (productId) => {
+export const deleteProduct = (productId, deleteError) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
 		const response = await fetch(
@@ -53,7 +53,7 @@ export const deleteProduct = (productId) => {
 		)
 
 		if (!response.ok) {
-			throw new Error('При удалении возникла ошибка..')
+			throw new Error(deleteError)
 		}
 
 		dispatch({ type: DELETE_PRODUCT, pid: productId })

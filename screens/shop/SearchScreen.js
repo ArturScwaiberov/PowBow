@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 
 import ErrorMessage from '../../components/UI/ErrorMessage'
 import SearchBar from '../../components/UI/SearchBar'
@@ -24,6 +25,7 @@ const SearchScreen = (props) => {
 	const products = useSelector((state) => state.products.availableProducts)
 	const [searchValue, setSearchValue] = useState('')
 	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
 	const onSearch = (text) => {
 		setSearchValue(text)
 	}
@@ -109,7 +111,7 @@ const SearchScreen = (props) => {
 				ListEmptyComponent={
 					!isRefreshing && (
 						<View style={{ alignItems: 'center', marginTop: 20 }}>
-							<Text>Упс... ничего не найдено 🙊</Text>
+							<Text>{t('searchAll.emptyList')}</Text>
 						</View>
 					)
 				}

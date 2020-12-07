@@ -1,6 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { FlatList, TouchableOpacity, Platform, TouchableNativeFeedback } from 'react-native'
+import { FlatList, TouchableOpacity, Platform, TouchableNativeFeedback, Alert } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
+import AsyncStorage from '@react-native-community/async-storage'
+import i18next from 'i18next'
 
 import CategoryItem from '../../components/shop/CategoryItem'
 import ErrorMessage from '../../components/UI/ErrorMessage'
@@ -11,8 +14,10 @@ import * as userRealtimeActions from '../../store/actions/users'
 const CategoriesOverviewScreen = (props) => {
 	const [isRefreshing, setIsRefreshing] = useState(false)
 	const [error, setError] = useState()
+	const lang = i18next.language
 	const categories = useSelector((state) => state.categories.availableCategories)
 	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
 	const viewCategoryHandler = (id, title) => {
 		props.navigation.navigate('Home', {
 			categoryId: id,
@@ -31,14 +36,14 @@ const CategoriesOverviewScreen = (props) => {
 		setIsRefreshing(true)
 
 		try {
-			await dispatch(categoriesActions.fetchCategories())
-			await dispatch(userRealtimeActions.fetchUserData())
+			await dispatch(categoriesActions.fetchCategories(t('categories.errorMessageFetch')))
+			await dispatch(userRealtimeActions.fetchUserData(t('categories.errorMessageFetchUser')))
+			setIsRefreshing(false)
 		} catch (err) {
 			setError(err)
+			setIsRefreshing(false)
 		}
-
-		setIsRefreshing(false)
-	}, [dispatch, setIsRefreshing, isRefreshing, setError, error])
+	}, [])
 
 	useEffect(() => {
 		const willFocusSub = props.navigation.addListener('focus', () => {
@@ -49,7 +54,7 @@ const CategoriesOverviewScreen = (props) => {
 	}, [])
 
 	if (error) {
-		console.log(error)
+		Alert.alert(t('categories.errorTitle'), t('categories.errorMessageFetchUser'), [{ text: 'Ок' }])
 		return <ErrorMessage onReload={loadCategories} />
 	}
 
@@ -66,6 +71,7 @@ const CategoriesOverviewScreen = (props) => {
 				renderItem={(itemData) => (
 					<CategoryItem
 						item={itemData.item}
+						lang={lang}
 						onSelect={() => {
 							viewCategoryHandler(itemData.item.id, itemData.item.title)
 						}}

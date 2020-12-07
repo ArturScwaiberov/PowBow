@@ -3,14 +3,14 @@ import Order from '../../models/order'
 export const ADD_ORDER = 'ADD_ORDER'
 export const SET_ORDERS = 'SET_ORDERS'
 
-export const fetchOrders = () => {
+export const fetchOrders = (ordersFetchError) => {
 	return async (dispatch, getState) => {
 		const userId = getState().auth.userId
 		try {
 			const response = await fetch(`https://shopapp-6f444.firebaseio.com/orders/${userId}.json`)
 
 			if (!response.ok) {
-				throw new Error('При обновлении корзины произошла ошибка...')
+				throw new Error(ordersFetchError)
 			}
 
 			const resData = await response.json()
@@ -35,7 +35,7 @@ export const fetchOrders = () => {
 	}
 }
 
-export const addOrder = (cartItems, totalAmount, phone, adress, payMethod) => {
+export const addOrder = (cartItems, totalAmount, phone, adress, payMethod, orderConfirmError) => {
 	return async (dispatch, getState) => {
 		const token = getState().auth.token
 		const userId = getState().auth.userId
@@ -61,7 +61,7 @@ export const addOrder = (cartItems, totalAmount, phone, adress, payMethod) => {
 		)
 
 		if (!response.ok) {
-			throw new Error('При добавлении заказа произошла ошибка...')
+			throw new Error(orderConfirmError)
 		}
 
 		const resData = await response.json()
@@ -80,10 +80,9 @@ export const addOrder = (cartItems, totalAmount, phone, adress, payMethod) => {
 	}
 }
 
-export const toMailOrder = (products, totalAmount, phone, adress, payMethod) => {
-	console.log(products, totalAmount, phone, adress, payMethod);
+export const toMailOrder = (products, totalAmount, phone, adress, payMethod, sendMailError) => {
 	return async (dispatch, getState) => {
-		const token = 'powpowtoken';
+		const token = 'Рowpowtoken'
 		const response = await fetch(`https://evamall.altkg.com/mail`, {
 			method: 'POST',
 			headers: {
@@ -95,12 +94,12 @@ export const toMailOrder = (products, totalAmount, phone, adress, payMethod) => 
 				phone,
 				adress,
 				payMethod,
-				token
+				token,
 			}),
 		})
 
 		if (!response.ok) {
-			throw new Error('При записи для отправки на почту произошла ошибка...')
+			throw new Error(sendMailError)
 		}
 	}
 }

@@ -10,6 +10,7 @@ import { createStackNavigator } from '@react-navigation/stack'
 import { Platform, useWindowDimensions, View, Text, StyleSheet, SafeAreaView } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation, withTranslation } from 'react-i18next'
 
 import Colors from '../constants/Colors'
 import CustomHeaderButton from '../components/UI/HeaderButton'
@@ -27,10 +28,8 @@ import CategoriesOverviewScreen from '../screens/shop/CategoriesOverviewScreen'
 import SearchScreen from '../screens/shop/SearchScreen'
 import AboutCompanyScreen from '../screens/shop/AboutCompanyScreen'
 import FeedbackScreen from '../screens/shop/FeedbackScreen'
-import { withTranslation  } from "react-i18next";
-import i18n from '../services/i18next'
+import ChangeModal from '../components/UI/ChangeModal'
 
-i18n
 const Stack = createStackNavigator()
 const Drawer = createDrawerNavigator()
 
@@ -57,7 +56,7 @@ const navOptions = {
 	},
 }
 
-const ProductsNavigator = withTranslation()(({t, i18n}) => {
+const ProductsNavigator = withTranslation()(({ t, i18n }) => {
 	const productsCount = Object.keys(useSelector((state) => state.cart.items)).length
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
 
@@ -84,9 +83,15 @@ const ProductsNavigator = withTranslation()(({t, i18n}) => {
 					name='Categories'
 					component={CategoriesOverviewScreen}
 					options={({ navigation }) => ({
-						title: 'Категории',
+						title: i18n.t('categories.title'),
+						headerTitleAlign: 'center',
 						headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
-						headerLeft: ({}) => <HeaderLeft navigation={navigation} />,
+						headerLeft: ({}) => (
+							<View style={{ flexDirection: 'row' }}>
+								<HeaderLeft navigation={navigation} />
+								<ChangeModal navigation={navigation} />
+							</View>
+						),
 						headerRight: () => {
 							return (
 								<View style={{ flexDirection: 'row' }}>
@@ -141,7 +146,7 @@ const ProductsNavigator = withTranslation()(({t, i18n}) => {
 					name='Cart'
 					component={CartScreen}
 					options={({ route }) => ({
-						title: 'Ваша корзина',
+						title: i18n.t('cart.title'),
 						headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 						headerRightContainerStyle: { display: 'none' },
 					})}
@@ -150,7 +155,7 @@ const ProductsNavigator = withTranslation()(({t, i18n}) => {
 					name='Search'
 					component={SearchScreen}
 					options={({ route }) => ({
-						title: 'Поиск по всем категориям',
+						title: i18n.t('searchAll.title'),
 						headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 						/* headerRightContainerStyle: { display: 'none' }, */
 					})}
@@ -160,7 +165,7 @@ const ProductsNavigator = withTranslation()(({t, i18n}) => {
 	)
 })
 
-function OrdersNavigator() {
+const OrdersNavigator = withTranslation()(({ t, i18n }) => {
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
@@ -172,15 +177,15 @@ function OrdersNavigator() {
 				name='Order'
 				component={OrdersScreen}
 				options={({ route }) => ({
-					title: 'Ваши заказы',
+					title: i18n.t('order.title'),
 					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 				})}
 			/>
 		</Stack.Navigator>
 	)
-}
+})
 
-function AboutNavigator() {
+const AboutNavigator = withTranslation()(({ t, i18n }) => {
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
@@ -192,15 +197,15 @@ function AboutNavigator() {
 				name='About'
 				component={AboutCompanyScreen}
 				options={({ route }) => ({
-					title: 'Подробно о нас',
+					title: i18n.t('about.title'),
 					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 				})}
 			/>
 		</Stack.Navigator>
 	)
-}
+})
 
-function AuthNavigator() {
+const AuthNavigator = withTranslation()(({ t, i18n }) => {
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
@@ -212,16 +217,16 @@ function AuthNavigator() {
 				name='Auth'
 				component={AuthScreen}
 				options={() => ({
-					title: 'Авторизация',
+					title: i18n.t('auth.title'),
 					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 					/* headerShown: false, */
 				})}
 			/>
 		</Stack.Navigator>
 	)
-}
+})
 
-function FeedbackNavigator() {
+const FeedbackNavigator = withTranslation()(({ t, i18n }) => {
 	return (
 		<Stack.Navigator
 			screenOptions={({ navigation }) => ({
@@ -233,15 +238,15 @@ function FeedbackNavigator() {
 				name='Feedback'
 				component={FeedbackScreen}
 				options={() => ({
-					title: 'Свяжитесь с нами',
+					title: i18n.t('feedback.title'),
 					headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 				})}
 			/>
 		</Stack.Navigator>
 	)
-}
+})
 
-const AdminNavigator = withTranslation() (({t, i18n}) => {
+const AdminNavigator = withTranslation()(({ t, i18n }) => {
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
 
 	return (
@@ -257,7 +262,7 @@ const AdminNavigator = withTranslation() (({t, i18n}) => {
 						name='Admin'
 						component={UserProductsScreen}
 						options={({ route, navigation }) => ({
-							title: 'Ваши продукты',
+							title: i18n.t('admin.title'),
 							headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 							headerRight: () => {
 								return (
@@ -277,7 +282,7 @@ const AdminNavigator = withTranslation() (({t, i18n}) => {
 						options={({ route }) => {
 							const submit = route.params?.submit
 							return {
-								title: route.params?.productTitle ?? 'Создать новый',
+								title: route.params?.productTitle ?? i18n.t('editProduct.title'),
 								headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 								headerRight: () => {
 									return (
@@ -299,6 +304,7 @@ const AdminNavigator = withTranslation() (({t, i18n}) => {
 })
 
 function CustomDrawerContent(props) {
+	const { t, i18n } = useTranslation()
 	const isSignedIn = useSelector((state) => state.auth.isAuth)
 	const getRole = useSelector((state) => state.auth.userSelfData)
 	const isAdmin = getRole[0]?.role ?? ''
@@ -333,7 +339,7 @@ function CustomDrawerContent(props) {
 				<DrawerItemList {...props} />
 				{isSignedIn && (
 					<DrawerItem
-						label='Выход'
+						label={t('auth.titleDrawerLogout')}
 						onPress={() => {
 							dispatch(authActions.logout())
 							props.navigation.navigate('ProductsNavigator')
@@ -352,7 +358,7 @@ function CustomDrawerContent(props) {
 	)
 }
 
-function DrawerComponent() {
+const DrawerComponent = withTranslation()(({ t, i18n }) => {
 	const dimensions = useWindowDimensions()
 	const ordersCount = useSelector((state) => state.orders.orders)
 	const completedOrdersCount = ordersCount.filter((order) => order.status === 'new').length
@@ -376,7 +382,7 @@ function DrawerComponent() {
 					name='Welcome'
 					component={StartupScreen}
 					options={({ navigation }) => ({
-						title: 'Доброе пожаловать',
+						title: i18n.t('welcome.titleDrawer'),
 						drawerIcon: ({ focused, color }) => (
 							<Ionicons
 								name={Platform.OS === 'android' ? 'md-star' : 'ios-star'}
@@ -392,7 +398,7 @@ function DrawerComponent() {
 				name='ProductsNavigator'
 				component={ProductsNavigator}
 				options={() => ({
-					title: 'Категории',
+					title: i18n.t('categories.titleDrawer'),
 					drawerIcon: ({ focused, color }) => (
 						<Ionicons
 							name={Platform.OS === 'android' ? 'md-list' : 'ios-list'}
@@ -408,7 +414,7 @@ function DrawerComponent() {
 						name='OrdersNavigator'
 						component={OrdersNavigator}
 						options={() => ({
-							title: 'История заказов',
+							title: i18n.t('order.titleDrawer'),
 							drawerIcon: ({ focused, color }) => (
 								<View>
 									<Ionicons
@@ -431,7 +437,7 @@ function DrawerComponent() {
 							name='AdminNavigator'
 							component={AdminNavigator}
 							options={() => ({
-								title: 'Ваши продукты',
+								title: i18n.t('admin.titleDrawer'),
 								drawerIcon: ({ focused, color }) => (
 									<View>
 										<Ionicons
@@ -452,10 +458,10 @@ function DrawerComponent() {
 						name='FeedbackNavigator'
 						component={FeedbackNavigator}
 						options={() => ({
-							title: 'Обратная связь',
+							title: i18n.t('feedback.titleDrawer'),
 							drawerIcon: ({ focused, color }) => (
 								<Ionicons
-									name={Platform.OS === 'android' ? 'md-bulb' : 'ios-bulb'}
+									name={Platform.OS === 'android' ? 'md-flame' : 'ios-flame'}
 									size={24}
 									color={color}
 								/>
@@ -468,7 +474,7 @@ function DrawerComponent() {
 				name='AboutNavigator'
 				component={AboutNavigator}
 				options={() => ({
-					title: 'О компании',
+					title: i18n.t('about.titleDrawer'),
 					drawerIcon: ({ focused, color }) => (
 						<Ionicons
 							name={Platform.OS === 'android' ? 'md-ribbon' : 'ios-ribbon'}
@@ -483,7 +489,7 @@ function DrawerComponent() {
 					name='AdminNavigator'
 					component={AuthNavigator}
 					options={() => ({
-						title: 'Войти',
+						title: i18n.t('auth.titleDrawerLogin'),
 						drawerIcon: ({ focused, color }) => (
 							<Ionicons
 								name={Platform.OS === 'android' ? 'md-log-in' : 'ios-log-in'}
@@ -496,7 +502,7 @@ function DrawerComponent() {
 			)}
 		</Drawer.Navigator>
 	)
-}
+})
 
 function App({ t, i18n }) {
 	return (

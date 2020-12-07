@@ -6,13 +6,13 @@ const CartItem = (props) => {
 	const IconCmp = () => {
 		if (props.quantity > 1) {
 			return (
-				<TouchableOpacity onPress={props.onReduce}>
+				<TouchableOpacity onPress={props.onReduce} style={styles.iconHolder}>
 					<Ionicons name={'ios-remove-circle'} size={24} color={'red'} />
 				</TouchableOpacity>
 			)
 		} else {
 			return (
-				<TouchableOpacity onPress={props.onRemove}>
+				<TouchableOpacity onPress={props.onRemove} style={styles.iconTrashHolder}>
 					<Ionicons
 						name={Platform.OS === 'android' ? 'md-trash' : 'ios-trash'}
 						size={24}
@@ -31,10 +31,10 @@ const CartItem = (props) => {
 					{props.quantity} x {props.price} = <Text style={styles.mainText}>{props.amount}</Text>
 				</Text>
 			</View>
-			<View style={styles.itemData}>
+			<View>
 				{props.deletable && (
 					<View style={styles.itemData}>
-						<TouchableOpacity onPress={props.onAppend}>
+						<TouchableOpacity onPress={props.onAppend} style={styles.iconHolder}>
 							<Ionicons name={'ios-add-circle'} size={24} color={'green'} />
 						</TouchableOpacity>
 						<IconCmp />
@@ -51,15 +51,18 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
+		paddingLeft: 16,
+		paddingRight: 6,
 	},
 	itemDataText: { flexDirection: 'row', width: '70%', alignItems: 'center' },
 	itemData: {
 		flexDirection: 'row',
+		justifyContent: 'space-between',
 		alignItems: 'center',
-		justifyContent: 'space-evenly',
 		flex: 1,
 	},
-	itemAmount: { width: '18%' },
+	iconHolder: { marginHorizontal: 10 },
+	iconTrashHolder: { marginLeft: 13, marginRight: 12 },
 	quantity: { fontFamily: 'open-sans', color: '#888', fontSize: 16 },
 	mainText: { fontFamily: 'open-sans-bold', fontSize: 16 },
 })

@@ -7,8 +7,6 @@ import * as Font from 'expo-font'
 import ReduxThunk from 'redux-thunk'
 import AsyncStorage from '@react-native-community/async-storage'
 
-import './services/i18next';
-
 /* import NavigationContainer from './navigation/NavigationContainer' */
 import ShopNavigator from './navigation/ShopNavigator'
 import categoryReducer from './store/reducers/categories'
@@ -26,7 +24,6 @@ const rootReducer = combineReducers({
 	orders: ordersReducer,
 })
 
-
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk))
 
 const fetchFonts = () => {
@@ -41,10 +38,10 @@ export default function App() {
 
 	useEffect(() => {
 		async function setLanguage() {
-			const lang = await AsyncStorage.getItem('lang') || 'ru';
-			i18n.changeLanguage(lang);
+			const lang = (await AsyncStorage.getItem('lang')) || 'ru'
+			i18n.changeLanguage(lang)
 		}
-		setLanguage();	
+		setLanguage()
 	}, [])
 
 	if (!fontLoaded) {

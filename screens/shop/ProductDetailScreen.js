@@ -1,12 +1,14 @@
 import React from 'react'
 import { StyleSheet, View, Text, ScrollView, Image, Button } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import NotFoundScreen from '../../screens/NotFoundScreen'
 import Colors from '../../constants/Colors'
 import * as cartActions from '../../store/actions/cart'
 
 const ProductDetailScreen = ({ route, navigation }, props) => {
+	const { t, i18n } = useTranslation()
 	const productId = route.params?.productId ?? 'NotFound'
 	const selectedProduct = useSelector((state) =>
 		state.products.availableProducts.find((prod) => prod.id === productId)
@@ -23,11 +25,11 @@ const ProductDetailScreen = ({ route, navigation }, props) => {
 			<Image style={styles.image} source={{ uri: selectedProduct.imageUrl }} />
 			<View style={styles.actions}>
 				{localId === selectedProduct.ownerId ? (
-					<Button color={Colors.primary} title='Можно отредактировать в списке ваших продуктов' />
+					<Button color={Colors.primary} title={t('product.ownerMessage')} />
 				) : (
 					<Button
 						color={Colors.primary}
-						title='Добавить в корзину'
+						title={t('product.addToCart')}
 						onPress={() => {
 							dispatch(cartActions.addToCart(selectedProduct))
 						}}

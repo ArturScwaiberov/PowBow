@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import { LinearGradient } from 'expo-linear-gradient'
 import { useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import Card from '../../components/UI/Card'
 import Input from '../../components/UI/Input'
@@ -49,23 +50,30 @@ const AuthScreen = (props) => {
 	const [error, setError] = useState()
 	const [isSignup, setIsSignup] = useState(false)
 	const [isForgot, setIsForgot] = useState(false)
+	const { t, i18n } = useTranslation()
 	const dispatch = useDispatch()
 
 	const [formState, dispatchFormState] = useReducer(formReducer, {
 		inputValues: {
 			email: '',
 			password: '',
+			passwordConfirm: '',
 		},
 		inputValidities: {
 			email: false,
 			password: false,
+			passwordConfirm: false,
 		},
 		formIsValid: false,
 	})
 
 	useEffect(() => {
 		if (error) {
-			Alert.alert('Упс.. ошибка..', error, [{ text: 'Ок' }])
+			Alert.alert(t('auth.errorTitle'), error, [
+				{
+					text: 'Ок',
+				},
+			])
 		}
 	}, [error])
 
@@ -73,10 +81,26 @@ const AuthScreen = (props) => {
 		let action
 		let actionRealtime
 		if (isSignup) {
-			action = authActions.signup(formState.inputValues.email, formState.inputValues.password)
-			actionRealtime = userRealtimeActions.createUser(formState.inputValues.email)
+			action = authActions.signup(
+				formState.inputValues.email,
+				formState.inputValues.password,
+				formState.inputValues.passwordConfirm,
+				t('auth.errorMessageRegister'),
+				t('auth.errorMessageExist'),
+				t('auth.errorMessageConfirmaPass')
+			)
+			actionRealtime = userRealtimeActions.createUser(
+				formState.inputValues.email,
+				t('auth.errorMessageCreateUser')
+			)
 		} else {
-			action = authActions.login(formState.inputValues.email, formState.inputValues.password)
+			action = authActions.login(
+				formState.inputValues.email,
+				formState.inputValues.password,
+				t('auth.errorMessageEnter'),
+				t('auth.errorMessageWrongPass'),
+				t('auth.errorMessageNoSuchEmail')
+			)
 		}
 		setIsLoading(true)
 		try {
@@ -84,25 +108,32 @@ const AuthScreen = (props) => {
 			if (isSignup) {
 				await dispatch(actionRealtime)
 			}
-			await dispatch(userRealtimeActions.fetchUserData())
-			setIsConfirmed(false)
+			await dispatch(userRealtimeActions.fetchUserData(t('categories.errorMessageFetchUser')))
 			props.navigation.navigate('ProductsNavigator')
 		} catch (err) {
 			setError(err.message)
 			setIsLoading(false)
+			setError(null)
 		}
 	}
 
 	const forgotHandler = async () => {
 		setIsLoading(true)
 		try {
-			await dispatch(authActions.resetEmail(formState.inputValues.email))
+			await dispatch(
+				authActions.resetEmail(
+					formState.inputValues.email,
+					t('auth.errorMessageReset'),
+					t('auth.errorMessageNotFound')
+				)
+			)
 			setIsSignup(false)
 			setIsForgot(false)
 			setIsLoading(false)
 		} catch (err) {
 			setError(err.message)
 			setIsLoading(false)
+			setError(null)
 		}
 	}
 
@@ -138,25 +169,25 @@ const AuthScreen = (props) => {
 					<ScrollView>
 						<Input
 							id='email'
-							label='Электронная почта'
+							label={t('auth.email')}
+							errorText={t('auth.emailErr')}
 							keyboardType='email-address'
 							required
 							email
 							autoCapitalize='none'
-							errorText='Пожалуйста введите почту'
 							onInputChange={inputChangeHandler}
 							initialValue=''
 						/>
 						{!isForgot && (
 							<Input
 								id='password'
-								label='Пароль'
+								label={t('auth.password')}
+								errorText={t('auth.passwordErr')}
 								keyboardType='default'
 								secureTextEntry
 								required
 								minLength={5}
 								autoCapitalize='none'
-								errorText='Пожалуйста заполните поле'
 								onInputChange={inputChangeHandler}
 								initialValue=''
 							/>
@@ -164,50 +195,54 @@ const AuthScreen = (props) => {
 						{isSignup && !isForgot && (
 							<Input
 								id='passwordConfirm'
-								label='Повторите пароль'
+								label={t('auth.passwordConf')}
+								errorText={t('auth.passwordErr')}
 								keyboardType='default'
 								secureTextEntry
 								required
 								minLength={5}
 								autoCapitalize='none'
-								errorText='Пожалуйста заполните поле'
 								onInputChange={inputChangeHandler}
 								initialValue=''
 								initiallyValid={false}
 							/>
 						)}
-						<View>
+						<View style={styles.buttonHolder}>
 							{isLoading ? (
 								<ActivityIndicator size='small' color={Colors.primary} />
 							) : isForgot ? (
-								<Button
-									style={styles.button}
-									title={'Восстановить'}
-									color={Colors.primary}
-									onPress={forgotHandler}
-									disabled={!formState.formIsValid}
-								/>
+								<View style={styles.button}>
+									<Button
+										title={t('auth.restore')}
+										color={Colors.primary}
+										onPress={forgotHandler}
+										disabled={!formState.inputValidities.email}
+									/>
+								</View>
 							) : (
-								<Button
-									style={styles.button}
-									title={isSignup ? 'Регистрация' : 'Войти'}
-									color={Colors.primary}
-									onPress={authHandler}
-									disabled={!formState.formIsValid}
-								/>
+								<View style={styles.button}>
+									<Button
+										title={isSignup ? t('auth.register') : t('auth.enter')}
+										color={Colors.primary}
+										onPress={authHandler}
+										disabled={
+											isSignup
+												? !formState.formIsValid
+												: !(formState.inputValidities.email && formState.inputValidities.password)
+										}
+									/>
+								</View>
 							)}
-							<Button
-								style={styles.button}
-								title={`${isSignup ? 'У меня есть аккаунт - Вход' : 'Нет аккаунта? Регистрация'}`}
-								color={Colors.accent}
-								onPress={registerAuthSwitcher}
-							/>
-							<Button
-								style={styles.button}
-								title='Я забыл(а) пароль'
-								color='#999'
-								onPress={forgotSwitcher}
-							/>
+							<View style={styles.button}>
+								<Button
+									title={`${isSignup ? t('auth.haveAcc') : t('auth.haveNoAcc')}`}
+									color={Colors.accent}
+									onPress={registerAuthSwitcher}
+								/>
+							</View>
+							<View style={styles.button}>
+								<Button title={t('auth.forgotPass')} color='#999' onPress={forgotSwitcher} />
+							</View>
 						</View>
 					</ScrollView>
 				</Card>
@@ -219,8 +254,9 @@ const AuthScreen = (props) => {
 const styles = StyleSheet.create({
 	screen: { flex: 1 },
 	gradient: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-	authContainer: { width: '80%', maxWidth: 400, maxHeight: 400, padding: 20 },
-	button: { marginVertical: 8 },
+	authContainer: { width: '85%', maxWidth: 400, maxHeight: 400, padding: 20 },
+	buttonHolder: { marginTop: 8 },
+	button: { marginTop: 8 },
 })
 
 export default AuthScreen

@@ -3,8 +3,8 @@ class User {
 		this.catId = catId
 		this.id = id
 		this.email = email
-		this.phone = phone ? phone : null
-		this.adress = adress ? adress : null
+		this.phone = phone
+		this.adress = adress
 		this.role = role
 	}
 }

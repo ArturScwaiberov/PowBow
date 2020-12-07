@@ -1,34 +1,31 @@
 import React, { useState } from 'react'
 import { StyleSheet, Text, Image, ScrollView, SafeAreaView } from 'react-native'
+import { useTranslation } from 'react-i18next'
 
 import Colors from '../../constants/Colors'
 
 const AboutCompanyScreen = (props) => {
+	const { t, i18n } = useTranslation()
+
 	return (
 		<ScrollView style={styles.screen}>
 			<SafeAreaView style={styles.holder}>
-				<Text style={styles.header}>Eva Mall</Text>
-				<Text style={styles.text}>
-					Предлагает широкий ассортимент товаров с доставкой прямо до двери!
-				</Text>
-				<Text style={styles.header}>Наши сертификаты</Text>
+				<Text style={styles.header}>{t('about.header1')}</Text>
+				<Text style={styles.text}>{t('about.introText1')}</Text>
+				<Text style={styles.header}>{t('about.header2')}</Text>
 				<Image
 					style={styles.image}
 					source={{ uri: 'http://toyboss.kg/media/uploads/certificates/06.jpg' }}
 				/>
-				<Text style={styles.text}>
-					Мы реализуем только качественный товар, только лицензированный - для вас!
-				</Text>
-				<Text style={styles.header}>Наши курьеры</Text>
+				<Text style={styles.text}>{t('about.introText2')}</Text>
+				<Text style={styles.header}>{t('about.header3')}</Text>
 				<Image
 					style={styles.image}
 					source={{
 						uri: 'https://i.pinimg.com/originals/01/7d/92/017d923fbbf1e3ffd319c063f3a5f959.jpg',
 					}}
 				/>
-				<Text style={styles.text}>
-					Мы реализуем только качественный товар, только лицензированный - для вас!
-				</Text>
+				<Text style={styles.text}>{t('about.introText3')}</Text>
 			</SafeAreaView>
 		</ScrollView>
 	)

@@ -81,7 +81,7 @@ const Input = (props) => {
 
 const styles = StyleSheet.create({
 	formControl: { width: '100%' },
-	label: { fontFamily: 'open-sans-bold', marginVertical: 8 },
+	label: { fontFamily: 'open-sans-bold', marginTop: 8 },
 	input: {
 		paddingVertical: 5,
 		paddingHorizontal: 2,

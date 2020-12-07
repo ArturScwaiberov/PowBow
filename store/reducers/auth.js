@@ -1,6 +1,5 @@
 import { LOGIN, SIGNUP, AUTHENTICATE, LOGOUT } from '../actions/auth'
 import { SET_USER_DATA, CREATE_USER, UPDATE_USER } from '../actions/users'
-import { combineReducers } from 'redux'
 
 const initialState = {
 	token: null,

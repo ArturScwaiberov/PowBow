@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { StyleSheet, View, Text, Platform } from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 
 import Colors from '../../constants/Colors'
 import CartItem from './CartItem'
@@ -8,6 +9,8 @@ import Card from '../UI/Card'
 
 const OrderItem = (props) => {
 	const [showDetails, setShowDetails] = useState(false)
+	const { t, i18n } = useTranslation()
+
 	return (
 		<Card style={styles.orderItem}>
 			{props.status === 'new' ? (
@@ -57,12 +60,12 @@ const OrderItem = (props) => {
 						/>
 					))}
 					<Text style={styles.status}>
-						Статус:{' '}
+						{t('order.status')}:{' '}
 						{props.status === 'new'
-							? 'Новый'
+							? t('order.statusNew')
 							: props.status === 'completed'
-							? 'Выполнен'
-							: 'Отменен'}
+							? t('order.statusSuccess')
+							: t('order.statusDeclined')}
 					</Text>
 				</View>
 			)}

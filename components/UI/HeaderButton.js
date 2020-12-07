@@ -1,28 +1,48 @@
 import React from 'react'
-import { Platform, Text, StyleSheet, View } from 'react-native'
+import {
+	Platform,
+	Text,
+	StyleSheet,
+	View,
+	TouchableNativeFeedback,
+	TouchableOpacity,
+} from 'react-native'
 import { Ionicons } from '@expo/vector-icons'
 import Colors from '../../constants/Colors'
 
 const CustomHeaderButton = (props) => {
+	let TouchableCmp = TouchableOpacity
+
+	if (Platform.OS === 'android' && Platform.Version >= 21) {
+		TouchableCmp = TouchableNativeFeedback
+	}
+
 	return (
-		<View>
-			<Ionicons
-				{...props}
-				size={24}
-				color={Platform.OS === 'android' ? 'white' : Colors.primary}
+		<TouchableCmp onPress={props.onPress}>
+			<View
 				style={{
-					paddingHorizontal: 15,
-					paddingVertical: 8,
+					paddingHorizontal: 16,
+					paddingVertical: 9,
+					backgroundColor: Platform.OS === 'android' ? Colors.primary : 'white',
+					flexGrow: 1,
+					justifyContent: 'center',
 				}}
-			/>
-			<View style={props.quantityInCart ? styles.informerHolder : styles.informerHiden}>
-				<Text style={styles.cartInformer}>{props?.quantityInCart ?? ''}</Text>
+			>
+				<Ionicons
+					name={props.name}
+					size={24}
+					color={Platform.OS === 'android' ? 'white' : Colors.primary}
+				/>
+				<View style={props.quantityInCart ? styles.informerHolder : styles.informerHiden}>
+					<Text style={styles.cartInformer}>{props?.quantityInCart ?? ''}</Text>
+				</View>
 			</View>
-		</View>
+		</TouchableCmp>
 	)
 }
 
 const styles = StyleSheet.create({
+	rounded: { borderRadius: 30 },
 	informerHolder: {
 		backgroundColor: Colors.accent,
 		width: 16,

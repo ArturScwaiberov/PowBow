@@ -8,12 +8,12 @@ import {
 	Platform,
 	TouchableNativeFeedback,
 } from 'react-native'
-import { useSelector } from 'react-redux'
 
 import Card from '../UI/Card'
 
 const CategoryItem = (props) => {
-	const { imageUrl, title, price, ownerId } = props.item
+	const { imageUrl, title, titleKg } = props.item
+	const currentLang = props.lang
 
 	let TouchableCmp = TouchableOpacity
 
@@ -28,7 +28,7 @@ const CategoryItem = (props) => {
 					<View>
 						<View style={styles.imageContainer}>
 							<Image style={styles.image} source={{ uri: imageUrl }} />
-							<Text style={styles.title}>{title}</Text>
+							<Text style={styles.title}>{currentLang === 'ru' ? title : titleKg}</Text>
 						</View>
 					</View>
 				</TouchableCmp>

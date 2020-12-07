@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { FlatList, Button, Alert } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import ProductItem from '../../components/shop/ProductItem'
 import Colors from '../../constants/Colors'
-import * as productsActions from '../../store/actions/products'
 import Loading from '../../components/UI/Loading'
+import * as productsActions from '../../store/actions/products'
 
 const UserProductsScreen = (props) => {
 	const [isLoading, setIsLoading] = useState(false)
@@ -13,6 +14,7 @@ const UserProductsScreen = (props) => {
 	const [error, setError] = useState()
 	const userProducts = useSelector((state) => state.products.userProducts)
 	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
 	const editProductHandler = (id, title) => {
 		props.navigation.navigate('Edit', {
 			productId: id,
@@ -25,7 +27,7 @@ const UserProductsScreen = (props) => {
 		setError(null)
 		setIsRefreshing(true)
 		try {
-			await dispatch(productsActions.fetchProducts())
+			await dispatch(productsActions.fetchProducts(t('admin.errorMessage')))
 		} catch (err) {
 			setError(err.message)
 		}
@@ -37,7 +39,7 @@ const UserProductsScreen = (props) => {
 		return function cleanup() {
 			mounted = false
 		}
-	}, [dispatch, setIsRefreshing, setError])
+	}, [setIsRefreshing, setError])
 
 	useEffect(() => {
 		const willFocusSub = props.navigation.addListener('focus', () => {
@@ -54,7 +56,7 @@ const UserProductsScreen = (props) => {
 
 	useEffect(() => {
 		if (error) {
-			Alert.alert('Упс.. ошибка', error, [{ text: 'Ок' }])
+			Alert.alert(t('admin.errorTitle'), error, [{ text: 'Ок' }])
 		}
 	}, [error])
 
@@ -63,7 +65,7 @@ const UserProductsScreen = (props) => {
 			setError(null)
 			setIsLoading(true)
 			try {
-				await dispatch(productsActions.deleteProduct(item))
+				await dispatch(productsActions.deleteProduct(item, t('admin.deleteError')))
 			} catch (err) {
 				setError(err.message)
 			}
@@ -73,10 +75,10 @@ const UserProductsScreen = (props) => {
 	)
 
 	const deleteHandler = (item) => {
-		Alert.alert('Удалить товар?', 'Вы хотите удалить товар?', [
-			{ text: 'Нет', style: 'default' },
+		Alert.alert(t('admin.deleteTitle'), t('admin.deleteQuestion'), [
+			{ text: t('admin.no'), style: 'default' },
 			{
-				text: 'Да',
+				text: t('admin.yes'),
 				style: 'destructive',
 				onPress: () => {
 					deleteProductHandler(item)
@@ -106,12 +108,12 @@ const UserProductsScreen = (props) => {
 				>
 					<Button
 						color={Colors.primary}
-						title='Редактировать'
+						title={t('admin.edit')}
 						onPress={() => editProductHandler(itemData.item.id, itemData.item.title)}
 					/>
 					<Button
 						color={Colors.primary}
-						title='Удалить'
+						title={t('admin.delete')}
 						onPress={deleteHandler.bind(this, itemData.item.id)}
 					/>
 				</ProductItem>

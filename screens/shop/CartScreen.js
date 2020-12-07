@@ -1,7 +1,18 @@
 import React, { useCallback, useEffect, useReducer, useState } from 'react'
-import { StyleSheet, View, Text, Button, FlatList, Alert, TouchableOpacity, Platform, TouchableNativeFeedback } from 'react-native'
+import {
+	StyleSheet,
+	View,
+	Text,
+	Button,
+	FlatList,
+	Alert,
+	TouchableOpacity,
+	Platform,
+	TouchableNativeFeedback,
+} from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { FontAwesome } from '@expo/vector-icons'
+import { useTranslation } from 'react-i18next'
 
 import Colors from '../../constants/Colors'
 import CartItem from '../../components/shop/CartItem'
@@ -43,9 +54,14 @@ const CartScreen = (props) => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [payMeth, setPayMeth] = useState('наличные')
 	const cartTotalAmount = useSelector((state) => state.cart.totalAmount)
-	const localUserData = useSelector((state) => state.auth.userSelfData[0])
-	const { adress, catId, email, id, phone, role } = localUserData
+	const localUserData = useSelector((state) => state.auth.userSelfData)
+	const adress = localUserData[0]?.adress ?? ''
+	const catId = localUserData[0]?.catId ?? ''
+	const phone = localUserData[0]?.phone ?? ''
+
 	const amountOfItems = Object.keys(useSelector((state) => state.cart.items)).length
+	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
 	const cartItems = useSelector((state) => {
 		const transformedCartItems = []
 		for (const key in state.cart.items) {
@@ -63,12 +79,11 @@ const CartScreen = (props) => {
 		const transformedCartItems = []
 		for (const key in state.cart.items) {
 			transformedCartItems.push(
-				`<br>Товар: ${state.cart.items[key].productTitle}, кол-во: ${state.cart.items[key].quantity}, цена: ${state.cart.items[key].productPrice}, сумма: ${state.cart.items[key].sum}`
+				`Товар: ${state.cart.items[key].productTitle}, кол-во: ${state.cart.items[key].quantity}, цена: ${state.cart.items[key].productPrice}, сумма: ${state.cart.items[key].sum}`
 			)
 		}
 		return transformedCartItems
 	})
-	const dispatch = useDispatch()
 
 	const [formState, dispatchFormState] = useReducer(formReducer, {
 		inputValues: {
@@ -90,7 +105,7 @@ const CartScreen = (props) => {
 
 	useEffect(() => {
 		if (error) {
-			Alert.alert('Упс.. ошибка', error, [{ text: 'Ок' }])
+			Alert.alert(t('cart.errorTitle'), error, [{ text: 'Ок' }])
 		}
 	}, [error])
 
@@ -102,7 +117,8 @@ const CartScreen = (props) => {
 				userRealtimeActions.updateUser(
 					catId,
 					formState.inputValues.phone,
-					formState.inputValues.adress
+					formState.inputValues.adress,
+					t('auth.errorMessageUpdateUser')
 				)
 			)
 			await dispatch(
@@ -111,7 +127,8 @@ const CartScreen = (props) => {
 					cartTotalAmount,
 					formState.inputValues.phone,
 					formState.inputValues.adress,
-					payMeth
+					payMeth,
+					t('auth.errorMessageConfirmOrder')
 				)
 			)
 			await dispatch(
@@ -120,10 +137,11 @@ const CartScreen = (props) => {
 					cartTotalAmount,
 					formState.inputValues.phone,
 					formState.inputValues.adress,
-					payMeth
+					payMeth,
+					t('order.errorMessageSendMail')
 				)
 			)
-			Alert.alert('Ваш заказ принят', 'В ближайшее время с Вами свяжется специалист', [
+			Alert.alert(t('cart.successOrderTitle'), t('cart.successOrderMessage'), [
 				{ text: 'Ок', onPress: () => props.navigation.navigate('Categories') },
 			])
 		} catch (err) {
@@ -145,81 +163,94 @@ const CartScreen = (props) => {
 	)
 
 	return (
-		<View style={styles.screen}>
-			{isLoading ? (
-				<Loading style={{ marginVertical: 20 }} />
-			) : (
-				<Card style={styles.cart}>
-					<Input
-						id='phone'
-						label='Номер телефона'
-						errorText='Пожалуйста введите номер'
-						keyboardType='number-pad'
-						onInputChange={inputChangeHandler}
-						required
-						minLength={9}
-						initialValue={formState.inputValues.phone}
-						clearButtonMode='always'
-					/>
-					<Input
-						id='adress'
-						label='Адрес доставки'
-						errorText='Пожалуйста введите адрес доставки'
-						keyboardType='default'
-						onInputChange={inputChangeHandler}
-						required
-						initialValue={formState.inputValues.adress}
-						clearButtonMode='always'
-					/>
-					<View>
-						<Text style={styles.payText}>Выберите способ оплаты</Text>
-						<View style={styles.payHolder}>
-							<TouchableCmp onPress={() => setPayMeth('наличные')}>
-								<View style={payMeth === 'наличные' ? styles.payOptionActive : styles.payOption}>
-									<FontAwesome
-										name={payMeth === 'наличные' ? 'dot-circle-o' : 'circle-o'}
-										size={24}
-										color={payMeth === 'наличные' ? Colors.primary : '#ccc'}
-									/>
-									<Text style={styles.payName}>Наличными</Text>
-								</View>
-							</TouchableCmp>
-							<TouchableCmp onPress={() => setPayMeth('карта')}>
-								<View style={payMeth === 'карта' ? styles.payOptionActive : styles.payOption}>
-									<FontAwesome
-										name={payMeth === 'карта' ? 'dot-circle-o' : 'circle-o'}
-										size={24}
-										color={payMeth === 'карта' ? Colors.primary : '#ccc'}
-									/>
-									<Text style={styles.payName}>Картой</Text>
-								</View>
-							</TouchableCmp>
-						</View>
-					</View>
-					<View style={styles.summary}>
-						<Text style={styles.summaryText}>
-							Итого: <Text style={styles.amount}>{Math.round(cartTotalAmount * 100) / 100}</Text>
-						</Text>
-						<Button
-							color={Colors.primary}
-							title='Оформить заказ'
-							disabled={
-								cartItems.length === 0 ||
-								formState.inputValues.phone === '' ||
-								formState.inputValues.adress === ''
-							}
-							onPress={makeOrderHandler}
-						/>
-					</View>
-				</Card>
-			)}
+		<View style={styles.container}>
 			<FlatList
 				data={cartItems}
 				keyExtractor={(item) => item.productId}
+				contentContainerStyle={{ flexGrow: 1, paddingBottom: 10 }}
+				ListHeaderComponent={() => {
+					return (
+						<View style={styles.screen}>
+							{isLoading ? (
+								<Loading style={{ marginVertical: 20 }} />
+							) : (
+								<Card style={styles.cart}>
+									<Input
+										id='phone'
+										label={t('cart.phone')}
+										errorText={t('cart.phoneError')}
+										keyboardType='number-pad'
+										onInputChange={inputChangeHandler}
+										required
+										minLength={9}
+										initialValue={formState.inputValues.phone}
+										clearButtonMode='always'
+									/>
+									<Input
+										id='adress'
+										label={t('cart.adress')}
+										errorText={t('cart.adressError')}
+										keyboardType='default'
+										onInputChange={inputChangeHandler}
+										required
+										initialValue={formState.inputValues.adress}
+										clearButtonMode='always'
+									/>
+									<View>
+										<Text style={styles.payText}>{t('cart.payMethod')}</Text>
+										<View style={styles.payHolder}>
+											<TouchableCmp onPress={() => setPayMeth('наличные')}>
+												<View
+													style={payMeth === 'наличные' ? styles.payOptionActive : styles.payOption}
+												>
+													<FontAwesome
+														name={payMeth === 'наличные' ? 'dot-circle-o' : 'circle-o'}
+														size={24}
+														color={payMeth === 'наличные' ? Colors.primary : '#ccc'}
+													/>
+													<Text style={styles.payName}>{t('cart.payCash')}</Text>
+												</View>
+											</TouchableCmp>
+											<TouchableCmp onPress={() => setPayMeth('карта')}>
+												<View
+													style={payMeth === 'карта' ? styles.payOptionActive : styles.payOption}
+												>
+													<FontAwesome
+														name={payMeth === 'карта' ? 'dot-circle-o' : 'circle-o'}
+														size={24}
+														color={payMeth === 'карта' ? Colors.primary : '#ccc'}
+													/>
+													<Text style={styles.payName}>{t('cart.payCard')}</Text>
+												</View>
+											</TouchableCmp>
+										</View>
+									</View>
+									<View style={styles.summary}>
+										<Text style={styles.summaryText}>
+											{t('cart.total')}:{' '}
+											<Text style={styles.amount}>{Math.round(cartTotalAmount * 100) / 100}</Text>
+										</Text>
+										<Button
+											color={Colors.primary}
+											title={t('cart.makeOrder')}
+											disabled={
+												cartItems.length === 0 ||
+												formState.inputValues.phone === '' ||
+												formState.inputValues.adress === ''
+											}
+											onPress={makeOrderHandler}
+										/>
+									</View>
+								</Card>
+							)}
+						</View>
+					)
+				}}
 				renderItem={(itemData) => (
 					<CartItem
 						title={itemData.item.productTitle}
 						quantity={itemData.item.quantity}
+						price={itemData.item.productPrice}
 						amount={itemData.item.sum}
 						deletable
 						onRemove={() => {
@@ -234,7 +265,7 @@ const CartScreen = (props) => {
 					/>
 				)}
 				ListEmptyComponent={() => (
-					<Text style={{ textAlign: 'center' }}>Ваша корзина пуста.. 🛒</Text>
+					<Text style={{ textAlign: 'center' }}>{t('cart.emptyList')}</Text>
 				)}
 			/>
 		</View>
@@ -242,9 +273,10 @@ const CartScreen = (props) => {
 }
 
 const styles = StyleSheet.create({
-	screen: { marginHorizontal: 20, marginVertical: 15 },
+	container: { flex: 1 },
+	screen: { paddingHorizontal: 20, paddingTop: 15 },
 	cart: {
-		marginBottom: 20,
+		marginBottom: 10,
 		padding: 10,
 	},
 	summary: {

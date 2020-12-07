@@ -4,7 +4,7 @@ import { FlatListSlider } from './slider'
 const Slider = (props) => {
 	const images = [
 		{
-			banner: require('../../data/images/FreeDelivery.jpg'),
+			banner: require('../../data/images/FreeDelivery.png'),
 			catId: 'c1',
 			catTitle: 'Test title',
 			enableLink: true,
@@ -16,7 +16,7 @@ const Slider = (props) => {
 			enableLink: false,
 		},
 		{
-			banner: require('../../data/images/FreeDelivery.jpg'),
+			banner: require('../../data/images/FreeDelivery.png'),
 			catId: 'c2',
 			catTitle: 'Chicken wonderful',
 			enableLink: true,

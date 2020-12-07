@@ -10,6 +10,7 @@ import {
 } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { Picker } from '@react-native-picker/picker'
+import { useTranslation } from 'react-i18next'
 import { YellowBox } from 'react-native'
 
 import * as productsActions from '../../store/actions/products'
@@ -54,6 +55,7 @@ const EditProductScreen = (props) => {
 		state.products.userProducts.find((prod) => prod.id === prodId)
 	)
 	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
 
 	const [formState, dispatchFormState] = useReducer(formReducer, {
 		inputValues: {
@@ -77,13 +79,13 @@ const EditProductScreen = (props) => {
 
 	useEffect(() => {
 		if (error) {
-			Alert.alert('Упс..', error, [{ text: 'Ок' }])
+			Alert.alert(t('editProduct.errorTitle'), error, [{ text: 'Ок' }])
 		}
 	}, [error])
 
 	const submitHandler = useCallback(async () => {
 		if (!formState.formIsValid) {
-			Alert.alert('Упс.. ошибка', 'Пожалуйста заполните все поля', [{ text: 'Ок' }])
+			Alert.alert(t('editProduct.errorTitle'), 'Пожалуйста заполните все поля', [{ text: 'Ок' }])
 			return
 		}
 		setError(null)
@@ -146,8 +148,8 @@ const EditProductScreen = (props) => {
 				<View style={styles.form}>
 					<Input
 						id='title'
-						label='Название'
-						errorText='Пожалуйста заполните поле'
+						label={t('editProduct.label')}
+						errorText={t('editProduct.errorInput')}
 						keyboardType='default'
 						onInputChange={inputChangeHandler}
 						initialValue={editedProduct ? editedProduct.title : ''}
@@ -156,8 +158,8 @@ const EditProductScreen = (props) => {
 					/>
 					<Input
 						id='imageUrl'
-						label='Картинка'
-						errorText='Пожалуйста заполните поле'
+						label={t('editProduct.image')}
+						errorText={t('editProduct.errorInput')}
 						keyboardType='email-address'
 						onInputChange={inputChangeHandler}
 						initialValue={editedProduct ? editedProduct.imageUrl : ''}
@@ -166,8 +168,8 @@ const EditProductScreen = (props) => {
 					/>
 					<Input
 						id='price'
-						label='Цена'
-						errorText='Необходимо указать цену'
+						label={t('editProduct.price')}
+						errorText={t('editProduct.errorPrice')}
 						keyboardType='number-pad'
 						onInputChange={inputChangeHandler}
 						initialValue={editedProduct ? editedProduct.price.toString() : ''}
@@ -178,8 +180,8 @@ const EditProductScreen = (props) => {
 					/>
 					<Input
 						id='description'
-						label='Описание'
-						errorText='Нужно ввести описание'
+						label={t('editProduct.description')}
+						errorText={t('editProduct.errorDesc')}
 						multiline
 						keyboardType='default'
 						onInputChange={inputChangeHandler}
@@ -188,7 +190,7 @@ const EditProductScreen = (props) => {
 						required
 						minLength={5}
 					/>
-					<Text style={styles.label}>Категория</Text>
+					<Text style={styles.label}>{t('editProduct.category')}</Text>
 					<Picker selectedValue={cat} onValueChange={(itemValue) => setCat(itemValue)}>
 						{Object.keys(productCategories).map((key) => {
 							return (
@@ -200,9 +202,9 @@ const EditProductScreen = (props) => {
 							)
 						})}
 					</Picker>
-					<Button title='Готово' color={Colors.primary} onPress={submitHandler} />
+					<Button title={t('editProduct.done')} color={Colors.primary} onPress={submitHandler} />
 					<Button
-						title='Отмена'
+						title={t('editProduct.cancel')}
 						color={Colors.accent}
 						onPress={() => {
 							props.navigation.goBack() /* navigate('Admin') */

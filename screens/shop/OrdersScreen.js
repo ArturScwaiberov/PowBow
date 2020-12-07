@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { StyleSheet, View, Text, FlatList } from 'react-native'
+import { View, Text, FlatList } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import * as ordersActions from '../../store/actions/orders'
 import OrderItem from '../../components/shop/OrderItem'
@@ -10,6 +11,7 @@ import ErrorMessage from '../../components/UI/ErrorMessage'
 const OrdersScreen = (props) => {
 	const [isLoading, setIsLoading] = useState(false)
 	const [error, setError] = useState()
+	const [t, i18n] = useTranslation()
 	const orders = useSelector((state) => state.orders.orders).sort(function (a, b) {
 		return new Date(b.date) - new Date(a.date)
 	})
@@ -17,22 +19,21 @@ const OrdersScreen = (props) => {
 
 	const loadOrders = useCallback(async () => {
 		let mounted = true
-		setError()
+		setError(null)
 		setIsLoading(true)
 		try {
-			await dispatch(ordersActions.fetchOrders())
+			await dispatch(ordersActions.fetchOrders(t('order.errorMessageFethcOrders')))
+
+			if (mounted) setIsLoading(false)
 		} catch (err) {
 			setError(err.message)
-		}
-
-		if (mounted) {
 			setIsLoading(false)
 		}
 
 		return function cleanup() {
 			mounted = false
 		}
-	}, [dispatch, setError, setIsLoading, isLoading, error])
+	}, [])
 
 	useEffect(() => {
 		loadOrders()
@@ -61,18 +62,12 @@ const OrdersScreen = (props) => {
 				)}
 				ListEmptyComponent={
 					!isLoading && (
-						<Text style={{ textAlign: 'center', marginTop: 20 }}>
-							Ваш список заказов пока пуст.. 📄
-						</Text>
+						<Text style={{ textAlign: 'center', marginTop: 20 }}>{t('order.emptyList')}</Text>
 					)
 				}
 			/>
 		</View>
 	)
 }
-
-const styles = StyleSheet.create({
-	screen: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-})
 
 export default OrdersScreen

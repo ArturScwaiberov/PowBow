@@ -7,35 +7,39 @@ import {
 	ScrollView,
 	TextInput,
 	Button,
-	KeyboardAvoidingView,
 	Alert,
 } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
+import { useTranslation } from 'react-i18next'
 
 import Colors from '../../constants/Colors'
 import * as feedbackActions from '../../store/actions/feedback'
 
 const FeedbackScreen = (props) => {
-	const localUserData = useSelector((state) => state.auth.userSelfData[0])
-	const { phone } = localUserData
+	const localUserData = useSelector((state) => {
+		state.auth.userSelfData
+	})
+	const phone = localUserData?.phone ?? ''
 	const [message, setMessage] = useState('')
 	const [userPhone, setUserPhone] = useState(phone ? phone : '')
-	const [error, setError] = useState()
+	const [error, setError] = useState('')
 	const dispatch = useDispatch()
+	const { t, i18n } = useTranslation()
 
 	useEffect(() => {
 		if (error) {
-			Alert.alert('Упс.. ошибка', error, [{ text: 'Ок' }])
+			Alert.alert(t('feedback.errorTitle'), error, [{ text: 'Ок' }])
 		}
+		setError('')
 	}, [error])
 
 	const sendFeedback = async () => {
 		setError(null)
 
 		try {
-			await dispatch(feedbackActions.sendFeedback(userPhone, message))
+			await dispatch(feedbackActions.sendFeedback(userPhone, message, t('feedback.errorDesc')))
 			setMessage('')
-			Alert.alert('Ваше сообщение отправлено', 'В ближайшее время с Вами свяжется специалист', [
+			Alert.alert(t('feedback.alertTitle'), t('feedback.alertDesc'), [
 				{ text: 'Ок', onPress: () => props.navigation.navigate('Categories') },
 			])
 		} catch (err) {
@@ -44,55 +48,51 @@ const FeedbackScreen = (props) => {
 	}
 
 	return (
-		<KeyboardAvoidingView behavior='position' keyboardVerticalOffset={90}>
-			<SafeAreaView style={styles.screen}>
-				<ScrollView style={styles.holder}>
-					<Text style={styles.text}>
-						Ваше мнение очень важно для нас, пожалуйста оставьте контактные данные и сообщение.
-					</Text>
-					<Text style={styles.header}>Форма обратной связи</Text>
-					<View style={styles.formControl}>
-						<Text style={styles.label}>Ваш котактный номер</Text>
-						<TextInput
-							style={styles.input}
-							clearButtonMode='always'
-							keyboardType='number-pad'
-							value={userPhone}
-							onChangeText={(text) => setUserPhone(text)}
-							/* onChangeText={textChangeHandler}
+		<SafeAreaView style={styles.screen}>
+			<ScrollView style={styles.holder}>
+				<Text style={styles.text}>{t('feedback.introText')}</Text>
+				<Text style={styles.header}>{t('feedback.header')}</Text>
+				<View style={styles.formControl}>
+					<Text style={styles.label}>{t('feedback.phone')}</Text>
+					<TextInput
+						style={styles.input}
+						clearButtonMode='always'
+						keyboardType='number-pad'
+						value={userPhone}
+						onChangeText={(text) => setUserPhone(text)}
+						/* onChangeText={textChangeHandler}
 				onBlur={lostFocusHandler} */
-						/>
-						<Text style={styles.label}>Сообщение</Text>
-						<TextInput
-							style={styles.textArea}
-							keyboardType='default'
-							multiline
-							numberOfLines={6}
-							value={message}
-							onChangeText={(text) => setMessage(text)}
-						/>
-						<View style={styles.buttonContainer}>
-							{userPhone.trim().length === 0 || message.trim().length === 0 ? (
-								<Text style={styles.textInfo}>Для отправки необходимо заполнить все поля.</Text>
-							) : (
-								<Button
-									title={'Отправить'}
-									color={Colors.primary}
-									disabled={userPhone.trim().length === 0 || message.trim().length === 0}
-									onPress={sendFeedback}
-								/>
-							)}
-						</View>
+					/>
+					<Text style={styles.label}>{t('feedback.message')}</Text>
+					<TextInput
+						style={styles.textArea}
+						keyboardType='default'
+						multiline
+						numberOfLines={6}
+						value={message}
+						onChangeText={(text) => setMessage(text)}
+					/>
+					<View style={styles.buttonContainer}>
+						{userPhone.trim().length === 0 || message.trim().length === 0 ? (
+							<Text style={styles.textInfo}>{t('feedback.requirements')}</Text>
+						) : (
+							<Button
+								title={t('feedback.send')}
+								color={Colors.primary}
+								disabled={userPhone.trim().length === 0 || message.trim().length === 0}
+								onPress={sendFeedback}
+							/>
+						)}
 					</View>
-				</ScrollView>
-			</SafeAreaView>
-		</KeyboardAvoidingView>
+				</View>
+			</ScrollView>
+		</SafeAreaView>
 	)
 }
 
 const styles = StyleSheet.create({
-	screen: { paddingHorizontal: 10 },
-	holder: { marginVertical: 10 },
+	screen: { flex: 1 },
+	holder: { flex: 1, marginVertical: 10, paddingHorizontal: 10 },
 	header: {
 		fontFamily: 'open-sans-bold',
 		fontSize: 22,
