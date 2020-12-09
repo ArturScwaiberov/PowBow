@@ -9,7 +9,7 @@ import {
 	Text,
 } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
-import { Picker } from '@react-native-picker/picker'
+import { Picker } from '@react-native-community/picker'
 import { useTranslation } from 'react-i18next'
 import { YellowBox } from 'react-native'
 

@@ -41,7 +41,7 @@
       "titleDrawer":"Категориялар",
       "emptyList":"Ой.. эч нерсе табылган жок",
       "errorTitle":"Упс.. туура эмес",
-      "errorMessageFetch":"Категорияны ЖУКТөө туура эмес",
+      "errorMessageFetch":"Жуктөө туура эмес",
       "errorMessageFetchUser":"Колдонуучунун маалыматын алуу учурунда ката кетип калды..."
    },
    "searchAll":{

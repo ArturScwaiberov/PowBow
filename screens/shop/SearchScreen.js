@@ -40,12 +40,13 @@ const SearchScreen = (props) => {
 		setError(null)
 		setIsRefreshing(true)
 		try {
-			await dispatch(productsActions.fetchProducts())
+			await dispatch(productsActions.fetchProducts(t('categories.errorMessageFetch')))
+			setIsRefreshing(false)
 		} catch (err) {
 			setError(err.message)
+			setIsRefreshing(false)
 		}
-		setIsRefreshing(false)
-	}, [dispatch, setIsRefreshing, setError])
+	}, [])
 
 	useEffect(() => {
 		const willFocusSub = props.navigation.addListener('focus', () => {

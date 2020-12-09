@@ -96,13 +96,13 @@ export const login = (email, password, defaultError, wrongPassError, noEmailErro
 		dispatch({ type: LOGIN, token: resData.idToken, userId: resData.localId })
 		/* dispatch(authenticate(resData.localId, resData.idToken, parseInt(resData.expiresIn) * 1000)) */
 
-		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) * 1000)
+		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expiresIn) / 3000)
 		saveDataToStorage(resData.idToken, resData.localId, expirationDate, resData.refreshToken)
 	}
 }
 
 export const refreshToken = () => {
-	return async () => {
+	return async (dispatch) => {
 		const userData = JSON.parse(await AsyncStorage.getItem('userData'))
 
 		const response = await fetch(
@@ -135,8 +135,10 @@ export const refreshToken = () => {
 
 		const resData = await response.json()
 
-		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expires_in) * 1000)
-		saveDataToStorage(resData.idToken, resData.localId, expirationDate, resData.refreshToken)
+		/* dispatch(authenticate(resData.user_id, resData.id_token, parseInt(resData.expires_in) * 1000)) */
+		dispatch({ type: LOGIN, token: resData.id_token, userId: resData.user_id })
+		const expirationDate = new Date(new Date().getTime() + parseInt(resData.expires_in) / 3000)
+		saveDataToStorage(resData.id_token, resData.user_id, expirationDate, resData.refresh_token)
 	}
 }
 

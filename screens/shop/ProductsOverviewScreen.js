@@ -61,20 +61,20 @@ const ProductsOverviewScreen = (props) => {
 		setError(null)
 		setIsRefreshing(true)
 		try {
-			await dispatch(productsActions.fetchProducts())
+			await dispatch(productsActions.fetchProducts(t('categories.errorMessageFetch')))
 			setIsRefreshing(false)
 		} catch (err) {
 			setError(err.message)
 			setIsRefreshing(false)
 		}
-	})
+	}, [])
 
 	useEffect(() => {
 		const willFocusSub = props.navigation.addListener('focus', () => {
 			loadProducts()
 		})
 		return willFocusSub
-	})
+	}, [])
 
 	if (error) {
 		return <ErrorMessage onReload={loadProducts} />

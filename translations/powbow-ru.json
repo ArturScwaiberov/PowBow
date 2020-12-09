@@ -41,7 +41,7 @@
        "titleDrawer":"Категории",
        "emptyList":"Упс.. ничего не найдено",
        "errorTitle":"Упс.. ошибка",
-       "errorMessageFetch":"При загрузке категорий произошла ошибка",
+       "errorMessageFetch":"При загрузке произошла ошибка",
        "errorMessageFetchUser":"При получении информации пользователя произошла ошибка..."
     },
     "searchAll":{

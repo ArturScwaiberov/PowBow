@@ -23,7 +23,6 @@ import EditProductScreen from '../screens/user/EditProductScreen'
 import AuthScreen from '../screens/user/AuthScreen'
 import StartupScreen from '../screens/StartupScreen'
 import * as authActions from '../store/actions/auth'
-import NotFoundScreen from '../screens/NotFoundScreen'
 import CategoriesOverviewScreen from '../screens/shop/CategoriesOverviewScreen'
 import SearchScreen from '../screens/shop/SearchScreen'
 import AboutCompanyScreen from '../screens/shop/AboutCompanyScreen'
@@ -117,7 +116,10 @@ const ProductsNavigator = withTranslation()(({ t, i18n }) => {
 					name='Home'
 					component={ProductsOverviewScreen}
 					options={({ navigation, route }) => ({
-						title: route.params.categoryTitle,
+						title:
+							route.params.lang === 'ru'
+								? route.params.categoryTitle
+								: route.params.categoryTitleKg,
 						headerTintColor: Platform.OS === 'android' ? 'white' : Colors.primary,
 						headerRight: () => {
 							return (
@@ -373,7 +375,7 @@ const DrawerComponent = withTranslation()(({ t, i18n }) => {
 			drawerContent={(props) => <CustomDrawerContent {...props} />}
 			drawerContentOptions={{
 				activeTintColor: Platform.OS === 'android' ? Colors.primary : 'white',
-				activeBackgroundColor: Platform.OS === 'android' ? 'white' : Colors.primary,
+				activeBackgroundColor: Platform.OS === 'android' ? '#f5f5f5' : Colors.primary,
 				labelStyle: { fontFamily: 'open-sans' },
 			}}
 		>

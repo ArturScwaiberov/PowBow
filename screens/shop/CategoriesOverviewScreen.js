@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { FlatList, TouchableOpacity, Platform, TouchableNativeFeedback, Alert } from 'react-native'
 import { useDispatch, useSelector } from 'react-redux'
 import { useTranslation } from 'react-i18next'
-import AsyncStorage from '@react-native-community/async-storage'
 import i18next from 'i18next'
 
 import CategoryItem from '../../components/shop/CategoryItem'
@@ -18,10 +17,12 @@ const CategoriesOverviewScreen = (props) => {
 	const categories = useSelector((state) => state.categories.availableCategories)
 	const dispatch = useDispatch()
 	const { t, i18n } = useTranslation()
-	const viewCategoryHandler = (id, title) => {
+	const viewCategoryHandler = (id, title, titleKg, lang) => {
 		props.navigation.navigate('Home', {
 			categoryId: id,
 			categoryTitle: title,
+			categoryTitleKg: titleKg,
+			lang,
 		})
 	}
 
@@ -55,6 +56,7 @@ const CategoriesOverviewScreen = (props) => {
 
 	if (error) {
 		Alert.alert(t('categories.errorTitle'), t('categories.errorMessageFetchUser'), [{ text: 'Ок' }])
+		setError(null)
 		return <ErrorMessage onReload={loadCategories} />
 	}
 
@@ -73,7 +75,12 @@ const CategoriesOverviewScreen = (props) => {
 						item={itemData.item}
 						lang={lang}
 						onSelect={() => {
-							viewCategoryHandler(itemData.item.id, itemData.item.title)
+							viewCategoryHandler(
+								itemData.item.id,
+								itemData.item.title,
+								itemData.item.titleKg,
+								lang
+							)
 						}}
 					/>
 				)}

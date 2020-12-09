@@ -16,12 +16,10 @@ import Colors from '../../constants/Colors'
 import * as feedbackActions from '../../store/actions/feedback'
 
 const FeedbackScreen = (props) => {
-	const localUserData = useSelector((state) => {
-		state.auth.userSelfData
-	})
-	const phone = localUserData?.phone ?? ''
+	const localUserData = useSelector((state) => state.auth.userSelfData)
+	const phone = localUserData[0]?.phone ?? ''
 	const [message, setMessage] = useState('')
-	const [userPhone, setUserPhone] = useState(phone ? phone : '')
+	const [userPhone, setUserPhone] = useState(phone)
 	const [error, setError] = useState('')
 	const dispatch = useDispatch()
 	const { t, i18n } = useTranslation()

@@ -36,7 +36,7 @@ const StartupScreen = (props) => {
 
 			if (expirationDate <= new Date()) {
 				await dispatch(authActions.refreshToken())
-				setIsLoading(false)
+				return
 			}
 
 			const expirationTime = expirationDate.getTime() - new Date().getTime()
