@@ -62,11 +62,10 @@ const ProductsOverviewScreen = (props) => {
 		setIsRefreshing(true)
 		try {
 			await dispatch(productsActions.fetchProducts(t('categories.errorMessageFetch')))
-			setIsRefreshing(false)
 		} catch (err) {
 			setError(err.message)
-			setIsRefreshing(false)
 		}
+		setIsRefreshing(false)
 	}, [])
 
 	useEffect(() => {
