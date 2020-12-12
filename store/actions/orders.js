@@ -60,35 +60,11 @@ export const addOrder = (cartItems, totalAmount, phone, adress, payMethod, order
 			}
 		)
 
-		const responseOne = await fetch(`https://boredsnowed.altkg.com/admin/orders/add?json=true`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-				Authorization: 'Basic dGVzdDp0ZXN0',
-			},
-			body: JSON.stringify({
-				cartItems,
-				totalAmount,
-				date: date.toISOString(),
-				status,
-				phone,
-				adress,
-				payMethod,
-				userId,
-			}),
-		})
-
 		if (!response.ok) {
 			throw new Error(orderConfirmError)
 		}
 
-		if (!responseOne.ok) {
-			throw new Error(orderConfirmError)
-		}
-
 		const resData = await response.json()
-		const resDataOne = await responseOne.json()
-		console.log(resDataOne)
 
 		dispatch({
 			type: ADD_ORDER,
